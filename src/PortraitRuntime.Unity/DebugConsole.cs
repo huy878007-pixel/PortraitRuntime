@@ -25,7 +25,7 @@ public sealed class DebugConsole
     bool oldCallNext, pending, stopping, realMode, arrived, paused, automatic, permitReal;
     int day;
     float arrivedAt;
-    string message = "打开营业后的测试存档，选择巡览范围。", search = "", note = "";
+    string message = "打开营业后的测试存档，选择巡览范围。", search = "", note = "", resolution = "exact";
     Rect window = new(25, 25, 960, 720);
     Rect hud;
     Vector2 scroll;
@@ -129,7 +129,7 @@ public sealed class DebugConsole
             else current = MakePreview(spec);
             owner.storeClientManager.clientStack.Add(current);
             pending = false;
-            RuntimeMod.Event("debug", "debug.case.queued", new { index = plan.Index, spec, current.identifier, current.spriteName, realMode });
+            RuntimeMod.Event("debug", "debug.case.queued", new { index = plan.Index, spec, current.identifier, current.spriteName, resolution, realMode });
             owner.TryCallNextClient();
             if (!ReferenceEquals(owner.currentClientInstance?.GetClientBlueprint(), current)) throw new InvalidOperationException("Native arrival could not start");
         }
@@ -143,8 +143,9 @@ public sealed class DebugConsole
     }
     StoreClient MakePreview(DebugCase spec)
     {
+        var sprite = ResolveSprite(spec, out resolution);
         var client = new StoreClient { identifier = Catalog.HasIdentity(spec.Identity) ? spec.Identity : "NO_ID", displayName = "[巡览] " + spec.Label,
-            spriteName = ResolveSprite(spec), clientIntent = StoreClient.ClientIntent.DIALOGUE, dismissable = true, arrestable = false, nonShootable = true,
+            spriteName = sprite, clientIntent = StoreClient.ClientIntent.DIALOGUE, dismissable = true, arrestable = false, nonShootable = true,
             isBargainAvailable = false, sourceModId = RuntimeMod.ModId };
         string text = spec.Text ?? "外观巡览，不执行此角色的原剧情。";
         client.mainDialogue.SetText("CLIENT", text + "\n" + spec.Id);
@@ -153,39 +154,72 @@ public sealed class DebugConsole
         synthetic.Add(client);
         return client;
     }
-    string ResolveSprite(DebugCase spec)
+    /// <summary>
+    /// Resolve the sprite the way the game itself would. SpriteDict.GetSprite falls back to a random
+    /// scavenger for unknown keys, so an unresolvable visitor must never borrow dictionary[0] (the
+    /// mentor portrait) and pretend the lookup succeeded; status names the rule that actually applied.
+    /// </summary>
+    string ResolveSprite(DebugCase spec, out string status)
     {
         var dict = SpriteDict.Instance.spriteDictionary;
         bool Known(string key) => key != null && dict.TryGetValue(key, out var sprite) && sprite != null;
-        if (Known(spec.SpriteKey)) return spec.SpriteKey;
-        foreach (var expression in spec.SpriteExpressions ?? Array.Empty<string>())
+        var expressions = spec.SpriteExpressions ?? Array.Empty<string>();
+        var candidates = expressions.SelectMany(Evaluate).ToList();
+        if (spec.PackId != null && Runtime.Catalog.Characters.TryGetValue(spec.PackId + "/" + spec.CharacterId, out var character))
+            candidates.AddRange(character.Value.Variants.Keys);
+        if (SpriteResolver.TryPick(spec.SpriteKey, candidates, Known, out var sprite, out status))
         {
-            var match = Regex.Match(expression, @"SpriteDict\.(\w+)\(\)");
-            if (!match.Success) continue;
-            var method = typeof(SpriteDict).GetMethod(match.Groups[1].Value, BindingFlags.Public | BindingFlags.Static);
-            if (method?.ReturnType == typeof(string) && method.GetParameters().Length == 0)
+            if (!Known(spec.SpriteKey) && expressions.Any(x => x != null && x.Contains("GetRandom"))) status = "random-pool";
+            RuntimeMod.Event("debug", "debug.sprite.resolved", new { spec.Id, status, sprite, expressions });
+            return sprite;
+        }
+        var fallback = ScavengerFallback();
+        RuntimeMod.Event("warning", "debug.sprite.fallback", new { spec.Id, status, requested = spec.SpriteKey, expressions, fallback });
+        return fallback;
+    }
+    /// <summary>Evaluate a catalogued sprite expression; supports literals and static 0..n-string calls.</summary>
+    static IEnumerable<string> Evaluate(string expression)
+    {
+        if (string.IsNullOrWhiteSpace(expression)) yield break;
+        var text = expression.Trim().TrimEnd(',');
+        var literal = Regex.Match(text, "^\"([^\"]*)\"$");
+        if (literal.Success) { yield return literal.Groups[1].Value; yield break; }
+        foreach (Match call in Regex.Matches(text, @"\b(SpriteDict|LocHelper)\.(\w+)\(([^()]*)\)"))
+        {
+            var type = call.Groups[1].Value == "SpriteDict" ? typeof(SpriteDict) : typeof(LocHelper);
+            var args = Regex.Matches(call.Groups[3].Value, "\"([^\"]*)\"").Cast<Match>().Select(x => (object)x.Groups[1].Value).ToArray();
+            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                         .Where(x => x.Name == call.Groups[2].Value && x.ReturnType == typeof(string) && x.GetParameters().Length == args.Length))
             {
-                var key = method.Invoke(null, null) as string;
-                if (Known(key)) return key;
+                string key = null;
+                try { key = method.Invoke(null, args) as string; }
+                catch (Exception e) { RuntimeMod.Event("error", "debug.sprite.expression.failed", new { expression, exception = e.ToString() }); }
+                if (key != null) yield return key;
             }
         }
-        if (spec.PackId != null && Runtime.Catalog.Characters.TryGetValue(spec.PackId + "/" + spec.CharacterId, out var character))
-        { var key = character.Value.Variants.Keys.FirstOrDefault(Known); if (key != null) return key; }
-        var fallback = dict.FirstOrDefault(x => x.Value != null).Key;
-        RuntimeMod.Event("warning", "debug.sprite.fallback", new { spec.Id, requested = spec.SpriteKey, fallback });
-        return fallback ?? "default";
+    }
+    /// <summary>The native fallback for an unknown key, so the preview shows what the game would show.</summary>
+    static string ScavengerFallback()
+    {
+        try
+        {
+            var method = typeof(SpriteDict).GetMethod("GetRandomScavSpriteName", BindingFlags.Public | BindingFlags.Static);
+            if (method != null && method.ReturnType == typeof(string) && method.GetParameters().Length == 0 && method.Invoke(null, null) is string key && key.Length > 0) return key;
+        }
+        catch (Exception e) { RuntimeMod.Event("error", "debug.sprite.scavenger.failed", new { exception = e.ToString() }); }
+        return "default";
     }
     public void Arrived()
     {
         if (!Active || !ReferenceEquals(owner.currentClientInstance?.GetClientBlueprint(), current)) return;
         arrived = true; arrivedAt = Time.unscaledTime;
-        RuntimeMod.Event("info", "debug.case.arrived", new { index = plan.Index, spec = plan.Current, current.identifier, current.spriteName,
+        RuntimeMod.Event("info", "debug.case.arrived", new { index = plan.Index, spec = plan.Current, current.identifier, current.spriteName, resolution,
             displayed = Runtime.Portrait.Renderer?.sprite?.name, frame = Time.frameCount, day });
     }
     public void Left() { if (Active && current != null && owner.currentClientInstance == null && !pending) RecordAndAdvance("left"); }
     void RecordAndAdvance(string outcome)
     {
-        results.Add(new { id = plan.Current?.Id, index = plan.Index, outcome, note, day, utc = DateTime.UtcNow.ToString("O") });
+        results.Add(new { id = plan.Current?.Id, index = plan.Index, outcome, note, resolution, day, utc = DateTime.UtcNow.ToString("O") });
         RuntimeMod.Event(outcome == "issue" ? "warning" : "info", "debug.case.result", new { id = plan.Current?.Id, index = plan.Index, outcome, note });
         note = ""; pending = true; arrived = false;
     }
@@ -302,10 +336,20 @@ public sealed class DebugConsole
         if (GUILayout.Button("关闭调试台")) Open = false;
         GUILayout.EndHorizontal(); GUI.DragWindow(new Rect(0, 0, 960, 24));
     }
+    string ResolutionLabel()
+    {
+        switch (resolution)
+        {
+            case "native-key-missing": return "原生缺 key，已按原生规则随机拾荒者（待核对）";
+            case "unresolved": return "未解析，已按原生规则随机拾荒者（待核对）";
+            case "random-pool": return "原生随机池";
+            default: return "精确";
+        }
+    }
     void Controls()
     {
         GUILayout.Label((plan.Index + 1) + " / " + plan.Cases.Count + " · " + (plan.Current?.Label ?? "等待开始"));
-        if (current != null) GUILayout.Label("身份 " + current.identifier + " · 精灵 " + current.spriteName + " · 图片 " + Runtime.Portrait.Renderer?.sprite?.name);
+        if (current != null) GUILayout.Label("身份 " + current.identifier + " · 精灵 " + current.spriteName + " · 图片 " + Runtime.Portrait.Renderer?.sprite?.name + " · 解析 " + ResolutionLabel());
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("上一位")) Replay(Math.Max(0, plan.Index - 1));
         if (GUILayout.Button("重看")) Replay(Math.Max(0, plan.Index));

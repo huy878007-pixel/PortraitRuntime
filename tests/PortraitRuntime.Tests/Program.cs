@@ -83,6 +83,81 @@ Test("non-detailed logging still keeps errors", () => { var dir = Fixture(new Pa
 Test("oversized log event preserves file limit and later events", () => { var dir=Fixture(new Pack { Id="logs" }); using var log=new TraceLog(Path.Combine(dir,"logs"),512,2); Check(!log.Write("info","large",new {text=new string('x',1024)})); Check(log.Dropped==1 && log.Write("error","small")); Check(log.Files.All(x=>new FileInfo(x).Length<=512)); });
 Test("unwritable log directory does not stop runtime", () => { var dir=Fixture(new Pack { Id="logs" }); var blocked=Path.Combine(dir,"occupied"); File.WriteAllText(blocked,"file"); using var log=new TraceLog(blocked); Check(log.Failure != null && !log.Write("error","test")); log.Dispose(); });
 Test("diagnostic observer cannot break story effects", () => { Action<string,object> observer = (_,_)=>throw new Exception("observer"); StoryEngine.Diagnostic+=observer; try{var h=new SimulationHost(); StoryEngine.Apply(new Pack{Id="test"},new[]{new Effect{Key="ok",Value="yes"}},"trace",h);Check(h.Get("test/ok")=="yes");} finally{StoryEngine.Diagnostic-=observer;} });
+var visiting = System.Text.Json.JsonSerializer.Deserialize<List<DebugCase>>(
+    File.ReadAllText(Path.Combine(repo, "catalogs/debug_visits.json")),
+    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+DebugCase Visit(string id) => visiting.Single(x => x.Id == id);
+Test("unresolved sprite never borrows the first dictionary entry", () =>
+{
+    var dict = new Dictionary<string, string> { ["mentor"] = "M", ["maleScav1"] = "S" };
+    Check(!SpriteResolver.TryPick(null, Array.Empty<string>(), dict.ContainsKey, out var sprite, out var status) && sprite == null && status == "unresolved");
+    Check(!SpriteResolver.TryPick("scavElder", new[] { "scavElder" }, dict.ContainsKey, out _, out var missing) && missing == "native-key-missing");
+    Check(SpriteResolver.TryPick(null, new[] { "maleScav1" }, dict.ContainsKey, out var picked, out var exact) && picked == "maleScav1" && exact == "exact");
+    Check(!SpriteResolver.TryPick("scavElder", Array.Empty<string>(), dict.ContainsKey, out _, out var empty) && empty == "native-key-missing");
+    Check(SpriteResolver.TryPick("scavElder", new[] { "maleScav1" }, dict.ContainsKey, out var rescued, out var rescuedStatus) && rescued == "maleScav1" && rescuedStatus == "exact");
+});
+Test("every debug visitor carries sprite information", () =>
+{
+    var missing = visiting.Where(x => string.IsNullOrEmpty(x.SpriteKey) && (x.SpriteExpressions?.Length ?? 0) == 0).Select(x => x.Id).ToArray();
+    Check(missing.Length == 0, "no sprite info: " + string.Join(", ", missing));
+});
+Test("wrapper factories inherit sprite and name from their builder", () =>
+{
+    Check(Visit("visit/scavGenericFoodSeller").SpriteExpressions.Contains("SpriteDict.GetRandomScavSpriteName()"));
+    Check(Visit("visit/louBoxDrop").SpriteKey == "wanted5" && Visit("visit/louDemandCollect").SpriteKey == "wanted5" && Visit("visit/louBoxCollect").SpriteKey == "wanted5");
+    Check(Visit("visit/wanted6_supply").SpriteKey == "wanted6" && Visit("visit/wanted6_finale").SpriteKey == "wanted6");
+    Check(Visit("visit/ulDiscerningShopper").SpriteExpressions.Contains("SpriteDict.GetRandomUpperSpriteName()"));
+});
+Test("native key defects stay identifiable instead of looking resolved", () =>
+{
+    Check(Visit("visit/lotteryRep").SpriteKey == null && Visit("visit/lotteryRep").SpriteExpressions.Single().Contains("LocHelper.GetLocalizedClientName"));
+    Check(Visit("visit/lowerLevelElder").SpriteExpressions.Single() == "SpriteDict.GetRandomElderSpriteName()");
+    Check(Visit("visit/OldScav1").SpriteExpressions.Single() == "SpriteDict.GetRandomElderSpriteName()");
+});
+Test("no visitor borrows the mentor template", () =>
+{
+    var mentors = visiting.Where(x => x.SpriteKey == "mentor" && !(x.Factory ?? "").StartsWith("StoreClientListStory.CreateMentor", StringComparison.Ordinal)).Select(x => x.Id).ToArray();
+    Check(mentors.Length == 0, "mentor substitution: " + string.Join(", ", mentors));
+});
+Test("visitor previews keep a real identity instead of NO_ID", () =>
+{
+    var bad = visiting.Where(x => !Catalog.HasIdentity(x.Identity)).Select(x => x.Id).ToArray();
+    Check(bad.Length == 0, "NO_ID: " + string.Join(", ", bad));
+});
+Test("internal factory labels are replaced by localized names", () =>
+{
+    foreach (var id in new[] { "visit/louBoxDrop", "visit/louBoxCollect", "visit/louDemandCollect", "visit/wanted6_supply", "visit/wanted6_finale", "visit/scavGenericFoodSeller", "visit/ulDiscerningShopper" })
+        Check(Visit(id).Label != Visit(id).RegistrationId, id + " still shows its internal tag");
+});
+Test("approved previews keep their character and image", () =>
+{
+    var catalog = new Catalog(); catalog.Add(ReadPack("core"));
+    var expected = new Dictionary<string, (string, string)>
+    {
+        ["visit/wanted1"] = ("bailey", "portraits/base/wanted1.png"),
+        ["visit/wanted1_return"] = ("bailey", "portraits/base/wanted1.png"),
+        ["visit/louBoxDrop"] = ("lou", "portraits/base/wanted5.png"),
+        ["visit/louBoxCollect"] = ("lou", "portraits/base/wanted5.png"),
+        ["visit/louDemandCollect"] = ("lou", "portraits/base/wanted5.png"),
+        ["visit/wanted6_supply"] = ("li", "portraits/base/wanted6.png"),
+        ["visit/wanted6_finale"] = ("li", "portraits/base/wanted6.png"),
+    };
+    foreach (var pair in expected)
+    {
+        var c = Visit(pair.Key);
+        Check(catalog.Character(c.Identity, c.Factory)?.Id == pair.Value.Item1, pair.Key + " -> " + catalog.Character(c.Identity, c.Factory)?.Id);
+        Check(catalog.CharacterAsset(c.Identity, c.Factory, c.SpriteKey)?.Value == pair.Value.Item2, pair.Key + " image -> " + catalog.CharacterAsset(c.Identity, c.Factory, c.SpriteKey)?.Value);
+    }
+});
+Test("anonymous change items are never bound to a named character", () =>
+{
+    var catalog = new Catalog(); catalog.Add(ReadPack("core"));
+    foreach (var id in new[] { "visit/lotteryRep", "visit/lowerLevelElder", "visit/OldScav1", "visit/scavGenericFoodSeller" })
+    {
+        var c = Visit(id);
+        Check(catalog.Character(c.Identity, c.Factory) == null, id + " was bound to " + catalog.Character(c.Identity, c.Factory)?.Id);
+    }
+});
 Console.WriteLine($"RESULT {passed} passed; {failed} failed");
 Environment.ExitCode = failed == 0 ? 0 : 1;
 
