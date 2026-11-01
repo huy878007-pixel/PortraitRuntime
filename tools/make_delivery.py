@@ -12,9 +12,12 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     verification = json.loads((ROOT / 'artifacts/verification.json').read_text(encoding='utf-8'))
     native = json.loads((ROOT / 'artifacts/native-contracts.json').read_text(encoding='utf-8'))
+    package = json.loads((ROOT / 'artifacts/package.json').read_text(encoding='utf-8'))
     assert verification['passed'] and native['passed'] and not verification['gameRuntimeTested']
     assert not native['scanner']['Refused'] and not native['scanner']['HardFlags']
-    destination = Path(r'C:\Users\Administrator\Desktop\深空内容核心库_0.2.2_双Mod_待游戏验收')
+    version = package['version']
+    beauty_version = package['beautyVersion']
+    destination = Path(rf'C:\Users\Administrator\Desktop\深空内容核心库_{version}_双Mod_待游戏验收')
     if destination.exists():
         destination = destination.with_name(destination.name + '_' + str(time.time_ns()))
     destination.mkdir()
@@ -30,10 +33,11 @@ def main():
                  'workbench-overview.png', 'workbench-character.png', 'workbench-mobile.png', 'workshop_item.vdf']:
         shutil.copy2(ROOT / 'artifacts' / name, evidence / name)
     test_result = next(line for line in (ROOT / 'artifacts/core-tests.log').read_text(encoding='utf-8').splitlines() if line.startswith('RESULT '))
-    summary = f'''# 深空内容核心库 0.2.2 · 双 Mod · 待游戏验收
+    summary = f'''# 深空内容核心库 {version} · 双 Mod · 待游戏验收
 
 已完成可构建交付与离线验证。游戏内验收尚未完成，游戏窗口由你操作。
 
+- 核心 `player.portraitruntime` {version}；人物美化内容包 `player.launchgiftportraits` {beauty_version}。
 - 核心规则测试：{test_result}
 - 原生接口静态检查：{len(native['checks'])} 项通过。
 - 游戏原生 ModScanner：Refused=false，扫描 {native['scanner']['MethodsScanned']} 个方法，无硬拒绝项。
@@ -46,9 +50,15 @@ def main():
 1. `工作台/index.html`：双击进入中文离线工作台。
 2. `Mod/player.portraitruntime`：独立核心库，不含人物美术。
 3. `Mod/player.launchgiftportraits`：依赖核心的人物美化内容版，替换旧独立版；两个 Mod 分开放置。
-3. `校验工具/validate_pack.exe`：数据包校验与模拟命令行工具。
-4. `源代码`：包含 csproj、代码、完整数据和素材，可按 README 重新构建与测试。
-5. `验证报告`：测试结果、截图、文件哈希与私有发布描述文件。
+4. `校验工具/validate_pack.exe`：数据包校验与模拟命令行工具。
+5. `源代码`：包含 csproj、代码、完整数据和素材，可按 README 重新构建与测试。
+6. `验证报告`：测试结果、截图、文件哈希与私有发布描述文件。
+
+## 本轮修复后请重点核对（对应你勾选的 11 项）
+
+- 已确认正确的 7 项（贝利首次与回访、卢放箱／取箱／催款、李北文供货与终章）：人物与图片保持不变。交付前再次核对：23 张基础立绘与 11 张特殊资源与 1.2.5 原版 DLL 嵌入资源逐字节一致，安装副本与源码也一致。
+- 需要修改的 4 项（彩票代表、下层区长者、老拾荒客、拾荒食物供货商）：不是素材错，也不是绑错了人，而是巡检预览在查不到取图信息时借用了字典第一张图（导师）。核实原版行为：这四位在原版里本来就取不到具名立绘——彩票代表把中文显示名当成精灵 key、长者取图指向一条精灵为空的原版数据、拾荒供货商直接取随机池——游戏会回退成随机拾荒者外观。预览现在照同一规则显示，并在 HUD 与报告里标「待核对」，不再冒充导师，也没有给他们硬绑具名角色。
+- 请用 F3 巡检这 4 项：确认显示的是拾荒者外观、状态标为「待核对」；再看卢与李北文的条目，姓名应是「卢」「李北文」而不是内部标签。
 
 ## 当前内容
 
@@ -59,9 +69,16 @@ def main():
 
 ## 尚待实际游戏确认
 
-立绘和离场显示、原生选项按钮、交易与库存、真实保存读档、F10 窗口输入和中文字体、30 分钟内存稳定性。静态检查与模拟不能代替这些项目。
+- 立绘与离场显示，含柜台外博士、朝左／朝右离场、剧情差分结束回到基础图
+- 高清立绘开关与离场后的相机还原
+- F10 原生窗口的滑条、保存／重置／关闭、窗口拖动与越界回收
+- 原生选项按钮、交易与库存、真实保存读档、30 分钟内存稳定性
 
-F3 打开调试界面，可切换 F4；提供当天全部人物、阶段和剧情配图巡检。默认预览不执行原剧情工厂；真实来访需显式选择并可能改变剧情。巡检期间阻止保存，停止时恢复排队。
+静态检查与模拟不能代替以上项目。
+
+核心库单独启用时：F3 调试界面照常可用，只做原版取图与控制台巡检，不替换任何人物，也不接管相机与位置。美化内容包启用后才显示娘化立绘并提供 F10。
+
+F3 打开调试界面，可切换 F4；提供当天全部人物、阶段和剧情配图巡检。默认预览不执行原剧情工厂；真实来访需显式选择并可能改变剧情。巡检期间阻止保存，停止时恢复排队。预览按游戏自己的取图规则显示：查不到的条目会标为「待核对」并走原生的随机拾荒者兜底，不会冒充导师模板。
 
 详细 JSONL 日志、F11 诊断、巡检报告保存在游戏持久数据目录的 PortraitRuntime/logs。每会话最多 32 个 4 MiB 日志文件，历史会话保留。请备份旧独立美化版到 Mods 目录外，再安装两份新 Mod；游戏内验证由你操作。
 '''

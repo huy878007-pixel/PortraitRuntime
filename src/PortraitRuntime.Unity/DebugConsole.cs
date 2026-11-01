@@ -282,7 +282,7 @@ public sealed class DebugConsole
         {
         var root = Runtime.Trace.DirectoryPath; System.IO.Directory.CreateDirectory(root);
         var path = Path.Combine(root, "tour-report-" + DateTime.UtcNow.ToString("yyyyMMddTHHmmssfff") + ".json");
-        File.WriteAllText(path, JsonConvert.SerializeObject(new { runtime = "0.2.0", gameRuntime = true, summary = Summary(), cases = plan.Cases, results,
+        File.WriteAllText(path, JsonConvert.SerializeObject(new { runtime = RuntimeMod.Version, gameRuntime = true, summary = Summary(), cases = plan.Cases, results,
             traceSession = Runtime.Trace?.Session, logFiles = Runtime.Trace?.Files, droppedLogs = Runtime.Trace?.Dropped, traceFailure = Runtime.Trace?.Failure }, Formatting.Indented));
         RuntimeMod.Event("info", "debug.report.export", new { path, count = results.Count });
         message = "报告已导出：" + path;

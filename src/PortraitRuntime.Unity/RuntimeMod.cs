@@ -13,6 +13,8 @@ public sealed class RuntimeMod : IMod
 {
     public const string ModId = "player.portraitruntime";
     public const string SupportedHash = "6398d44aa1675e1f02b63bc668868f970e0f5d3ae5a50f2aced8d06ca084e3b5";
+    /// <summary>Build version, taken from the assembly so reports cannot drift from the binary.</summary>
+    public static string Version => typeof(RuntimeMod).Assembly.GetName().Version.ToString(3);
     public static RuntimeMod Current { get; private set; }
     public Catalog Catalog { get; private set; } = new();
     public readonly NativeHost Host = new();
@@ -77,7 +79,7 @@ public sealed class RuntimeMod : IMod
         Current = this;
         Trace?.Dispose(); Trace = new TraceLog(Path.Combine(Application.persistentDataPath, "PortraitRuntime", "logs"));
         if (Trace.Failure != null) Debug.LogWarning("[PortraitRuntime] File logging unavailable: " + Trace.Failure);
-        Event("info", "runtime.init", new { runtime = "0.2.2", Root, manifest.ID });
+        Event("info", "runtime.init", new { runtime = Version, Root, manifest.ID });
         using var sha = SHA256.Create();
         using var stream = File.OpenRead(typeof(StoreClient).Assembly.Location);
         var hash = BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
@@ -264,7 +266,7 @@ public sealed class RuntimeMod : IMod
     public void Diagnostics()
     {
         var blueprint = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
-        var value = new { gameHash = SupportedHash, runtime = "0.2.2", sources = ContentSources.Snapshot, debug = Debugger.Summary(), packs = Catalog.Packs.Select(x => new { x.Id, x.Priority }), conflicts = Catalog.Conflicts,
+        var value = new { gameHash = SupportedHash, runtime = Version, sources = ContentSources.Snapshot, debug = Debugger.Summary(), packs = Catalog.Packs.Select(x => new { x.Id, x.Priority }), conflicts = Catalog.Conflicts,
             client = blueprint == null ? null : new { blueprint.identifier, blueprint.spriteName, factory = Origins.TryGetValue(blueprint, out var f) ? f.Factory : "" },
             cacheBytes = Assets.Bytes, cacheEntries = Assets.Count, traceSession = Trace?.Session, logs = Trace?.Files, droppedLogs = Trace?.Dropped, logFailure = Trace?.Failure,
             timestamp = DateTime.UtcNow.ToString("O"), stage = "runtime-user-initiated" };
