@@ -30,8 +30,7 @@ public static class Hooks
         // Outside the counter the game builds the doctor directly and writes the renderer itself,
         // so the normal arrival path never runs for it.
         Patch(typeof(MapUIManager), "ActivateClientOutsideStore", postfix: nameof(Outside));
-        Patch(typeof(StoreClientMono), "StartLeavingStore", prefix: nameof(LeavingLeft));
-        Patch(typeof(StoreClientMono), "StartLeavingStoreRight", prefix: nameof(LeavingRight));
+        Patch(typeof(StoreUIManager), "OnClientStartLeaving", postfix: nameof(Leaving));
         Patch(typeof(DialogUIManager), "DisplayClientText", postfix: nameof(Display), arguments: new[] { typeof(Dialogue) });
         Patch(typeof(Dialogue), "SetText", postfix: nameof(SetText), arguments: new[] { typeof(string), typeof(string) });
         Patch(typeof(Dialogue), "SetText", postfix: nameof(SetRichText), arguments: new[] { typeof(string), typeof(RichTextBuilder) });
@@ -90,14 +89,13 @@ public static class Hooks
                 PortraitApi.Raise(PortraitApi.OutsideStore, RuntimeMod.Context(client, renderer));
         });
     }
-    static void LeavingLeft(StoreClientMono __instance) => Leaving("left", __instance);
-    static void LeavingRight(StoreClientMono __instance) => Leaving("right", __instance);
-    static void Leaving(string direction, StoreClientMono instance)
+    static void Leaving(bool right)
     {
         if (!Active) return;
         var client = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
-        var context = RuntimeMod.Context(client, instance != null ? instance.image : null);
-        PortraitApi.Raise(PortraitApi.Leaving, new { direction, context });
+        var renderer = StoreClientMono.Instance?.image;
+        var context = RuntimeMod.Context(client, renderer);
+        PortraitApi.Raise(PortraitApi.Leaving, new { direction = right ? "right" : "left", context });
     }
     static void Left(StoreClientMono __instance)
     {

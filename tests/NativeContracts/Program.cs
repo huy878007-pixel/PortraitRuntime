@@ -30,8 +30,7 @@ static class Contract
         Method(typeof(GeneralHelper), "SetItemOwned");
         Method(typeof(StoreUIManager), "RunMorningDialogue");
         Method(typeof(MapUIManager), "ActivateClientOutsideStore");
-        Method(typeof(StoreClientMono), "StartLeavingStore");
-        Method(typeof(StoreClientMono), "StartLeavingStoreRight");
+        Method(typeof(StoreUIManager), "OnClientStartLeaving");
         Method(typeof(CustomUIManager), "CreateWindow");
         Method(typeof(CustomUIManager), "GetLayerRoot");
         Method(typeof(LocHelper), "Get");

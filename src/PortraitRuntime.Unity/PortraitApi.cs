@@ -74,16 +74,18 @@ public static class PortraitApi
     }
 
     /// <summary>
-    /// Resolve a content asset. With <c>key</c> it looks up a scene special; otherwise it resolves the
-    /// portrait for a client context. All results are <c>{ok,pack,path,character,via,reason}</c>.
+    /// Resolve a content asset. With <c>sprite</c> it answers a native sprite name (scene specials,
+    /// then character variants), which is what makes the walk-in and walk-out frames correct too;
+    /// otherwise it resolves the portrait for a client context.
+    /// All results are <c>{ok,pack,path,character,via,reason}</c>.
     /// </summary>
     public static string Lookup(string request)
     {
         var query = Parse(request);
-        var key = Get(query, "key");
+        var sprite = Get(query, "sprite");
         var catalog = RuntimeMod.Current?.Catalog;
-        return JsonConvert.SerializeObject(key != null
-            ? SpriteLookup.ResolveSpecial(catalog, key)
+        return JsonConvert.SerializeObject(sprite != null
+            ? SpriteLookup.ResolveSpriteName(catalog, sprite)
             : SpriteLookup.Resolve(catalog, Get(query, "identity"), Get(query, "factory"), Get(query, "spriteKey"), Get(query, "dialogueKey")));
     }
 

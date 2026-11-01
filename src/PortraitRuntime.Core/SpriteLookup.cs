@@ -47,4 +47,34 @@ public static class SpriteLookup
             return new Result { Ok = true, Pack = special.Pack.Id, Path = special.Value, Via = "special" };
         return new Result { Reason = "no-mapping" };
     }
+
+    /// <summary>
+    /// Resolve a native sprite name to the character that claims it. Only names a character declares
+    /// in its own variants table are eligible, so a shared generic sprite can never be dressed up as a
+    /// named character; a name claimed by two characters is refused rather than guessed.
+    /// The name lookup is what makes the portrait correct the moment the game asks for the sprite,
+    /// i.e. while the client is still walking in and out, not only once they reach the counter.
+    /// </summary>
+    public static Result ResolveVariant(Catalog catalog, string spriteName)
+    {
+        if (catalog == null) return new Result { Reason = "runtime-absent" };
+        if (string.IsNullOrEmpty(spriteName)) return new Result { Reason = "no-mapping" };
+        Result found = null;
+        var claims = 0;
+        foreach (var pack in catalog.Packs)
+            foreach (var character in pack.Characters)
+            {
+                if (!character.Value.Variants.TryGetValue(spriteName, out var path) || path == null) continue;
+                claims++;
+                if (found == null) found = new Result { Ok = true, Pack = pack.Id, Path = path, Character = character.Key, Via = "variant" };
+            }
+        return claims == 1 ? found : new Result { Reason = claims > 1 ? "ambiguous" : "no-mapping" };
+    }
+
+    /// <summary>The two name spaces a pack can claim: scene specials, then character variants.</summary>
+    public static Result ResolveSpriteName(Catalog catalog, string spriteName)
+    {
+        var special = ResolveSpecial(catalog, spriteName);
+        return special.Ok ? special : ResolveVariant(catalog, spriteName);
+    }
 }

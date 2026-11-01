@@ -12,8 +12,8 @@ from xml.etree.ElementTree import Element, SubElement, ElementTree
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-CORE_VERSION = '0.3.3'
-BEAUTY_VERSION = '2.1.3'
+CORE_VERSION = '0.3.4'
+BEAUTY_VERSION = '2.1.4'
 
 
 def sha(path):

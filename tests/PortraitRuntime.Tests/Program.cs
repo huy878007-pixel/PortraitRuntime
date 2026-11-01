@@ -186,6 +186,25 @@ Test("item icons stay with the pack-declared item runtime", () =>
     var demo = new Catalog(); demo.Add(ReadPack("demo"));
     Check(demo.ItemIcons.TryGetValue("demo.signal", out var icon) && icon.Value.Icon != null, "item icon must remain registered");
 });
+Test("native sprite names resolve to their character variant", () =>
+{
+    var catalog = new Catalog(); catalog.Add(ReadPack("core"));
+    var lun = SpriteLookup.ResolveSpriteName(catalog, "officer_lun");
+    Check(lun.Ok && lun.Character == "lun" && System.IO.Path.GetFileName(lun.Path) == "lun.png", "officer_lun -> " + lun.Path);
+    var bailey = SpriteLookup.ResolveSpriteName(catalog, "wanted1");
+    Check(bailey.Ok && bailey.Character == "bailey" && System.IO.Path.GetFileName(bailey.Path) == "wanted1.png", "wanted1 -> " + bailey.Path);
+    var special = SpriteLookup.ResolveSpriteName(catalog, "wanted");
+    Check(special.Ok && special.Via == "special", "wanted must stay a scene special");
+    Check(!SpriteLookup.ResolveSpriteName(catalog, "maleScav5").Ok, "a shared generic sprite must stay vanilla");
+    Check(!SpriteLookup.ResolveSpriteName(catalog, "sec").Ok, "the shared security sprite must stay vanilla");
+});
+Test("a sprite name claimed by two characters is refused, not guessed", () =>
+{
+    var catalog = new Catalog();
+    catalog.Add(new Pack { Id = "a", Characters = new() { ["one"] = new() { Variants = new() { ["shared_face"] = "one.png" } } } });
+    catalog.Add(new Pack { Id = "b", Characters = new() { ["two"] = new() { Variants = new() { ["shared_face"] = "two.png" } } } });
+    Check(SpriteLookup.ResolveVariant(catalog, "shared_face").Reason == "ambiguous");
+});
 Console.WriteLine($"RESULT {passed} passed; {failed} failed");
 Environment.ExitCode = failed == 0 ? 0 : 1;
 

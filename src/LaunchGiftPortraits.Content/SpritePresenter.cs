@@ -33,7 +33,7 @@ static class SpritePresenter
 
     static string Ask(string key)
     {
-        var reply = CoreBridge.Lookup(JsonConvert.SerializeObject(new { key }));
+        var reply = CoreBridge.Lookup(JsonConvert.SerializeObject(new { sprite = key }));
         if (string.IsNullOrEmpty(reply)) return null;
         try
         {
