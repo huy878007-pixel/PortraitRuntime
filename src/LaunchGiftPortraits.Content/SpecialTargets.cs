@@ -86,7 +86,7 @@ static class SpecialTargets
 
     static string Answer(string key)
     {
-        var reply = CoreBridge.Lookup(JsonConvert.SerializeObject(new { kind = "special", key }));
+        var reply = CoreBridge.Lookup(JsonConvert.SerializeObject(new { key }));
         if (string.IsNullOrEmpty(reply)) return null;
         try
         {

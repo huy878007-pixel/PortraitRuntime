@@ -20,7 +20,6 @@ public static class PortraitApi
     public static string[] Capabilities => new[] { "lifecycle/1", "lookup/1", "assets/1", "apply/1", "status/1" };
     public static int SubscriberCount { get { lock (subscribers) return subscribers.Count; } }
     public static bool SpriteResolverReady => spriteResolver != null;
-    public static bool ItemResolverReady => itemResolver != null;
 
     // Lifecycle names. A handler receives (name, jsonPayload).
     public const string Enabled = "runtime.enabled";
@@ -35,7 +34,7 @@ public static class PortraitApi
     public const string OutsideStore = "client.outside";
 
     static readonly List<Action<string, string>> subscribers = new();
-    static Func<string, string> spriteResolver, itemResolver;
+    static Func<string, string> spriteResolver;
 
     public static void Subscribe(Action<string, string> handler)
     {
@@ -50,14 +49,12 @@ public static class PortraitApi
     /// <summary>
     /// The content Mod answers game sprite lookups: given the native sprite name, return
     /// <c>"packId|relative/path"</c> to replace it, or null to leave it native.
+    /// Item icons are not routed here; they belong to the pack-declared item runtime.
     /// </summary>
     public static void SetSpriteResolver(Func<string, string> resolver) => spriteResolver = resolver;
-    /// <summary>Same contract for item icons, keyed by item identifier.</summary>
-    public static void SetItemResolver(Func<string, string> resolver) => itemResolver = resolver;
 
     /// <summary>Consult the content Mod. Kept allocation-free: sprite lookups run on the render path.</summary>
     internal static Func<string, string> SpriteResolver => spriteResolver;
-    internal static Func<string, string> ItemResolver => itemResolver;
 
     /// <summary>Fan out one lifecycle event. A throwing subscriber cannot break the runtime.</summary>
     public static void Raise(string name, object payload)
@@ -77,17 +74,16 @@ public static class PortraitApi
     }
 
     /// <summary>
-    /// Resolve a content asset. With <c>kind</c> set ("special" or "item") it answers from the pack
-    /// registry; otherwise it resolves the portrait for a client context.
-    /// All results are <c>{ok,pack,path,character,via,reason}</c>.
+    /// Resolve a content asset. With <c>key</c> it looks up a scene special; otherwise it resolves the
+    /// portrait for a client context. All results are <c>{ok,pack,path,character,via,reason}</c>.
     /// </summary>
     public static string Lookup(string request)
     {
         var query = Parse(request);
-        var kind = Get(query, "kind");
+        var key = Get(query, "key");
         var catalog = RuntimeMod.Current?.Catalog;
-        return JsonConvert.SerializeObject(kind != null
-            ? SpriteLookup.ResolveAsset(catalog, kind, Get(query, "key"))
+        return JsonConvert.SerializeObject(key != null
+            ? SpriteLookup.ResolveSpecial(catalog, key)
             : SpriteLookup.Resolve(catalog, Get(query, "identity"), Get(query, "factory"), Get(query, "spriteKey"), Get(query, "dialogueKey")));
     }
 
@@ -152,7 +148,7 @@ public static class PortraitApi
     public static string Status() => JsonConvert.SerializeObject(new
     {
         version = Version, capabilities = Capabilities, subscribers = SubscriberCount,
-        spriteResolver = SpriteResolverReady, itemResolver = ItemResolverReady,
+        spriteResolver = SpriteResolverReady,
         runtime = RuntimeMod.Current == null ? "absent" : RuntimeMod.Current.Enabled ? "enabled" : "disabled",
         packs = RuntimeMod.Current == null ? Array.Empty<string>() : RuntimeMod.Current.Catalog.Packs.Select(x => x.Id).ToArray(),
     });

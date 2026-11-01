@@ -75,11 +75,11 @@ static class Contract
         bool handshake = (int)Property("Version")! == 2 && capabilities.Contains("lifecycle/1") && capabilities.Contains("lookup/1") && capabilities.Contains("assets/1")
             && subscribersBound == 1 && lastEvent.StartsWith("test.ping", StringComparison.Ordinal);
         string status = (string)api.GetMethod("Status", BindingFlags.Public | BindingFlags.Static)!.Invoke(null, null)!;
-        bool resolvers = status.Contains("\"spriteResolver\":true", StringComparison.Ordinal) && status.Contains("\"itemResolver\":true", StringComparison.Ordinal);
+        bool resolvers = status.Contains("\"spriteResolver\":true", StringComparison.Ordinal);
         handshake &= resolvers;
         ok &= handshake;
-        checks.Add(new { target = "beauty Mod binds the core API by reflection and registers the replacement resolvers", found = handshake, version = Property("Version"), capabilities, lastEvent });
-        foreach (var member in new[] { "ApplyTo", "ReleaseTo", "SetSpriteResolver", "SetItemResolver" })
+        checks.Add(new { target = "beauty Mod binds the core API by reflection and registers the replacement resolver", found = handshake, version = Property("Version"), capabilities, lastEvent });
+        foreach (var member in new[] { "ApplyTo", "ReleaseTo", "SetSpriteResolver" })
         {
             var found = api.GetMethod(member, BindingFlags.Public | BindingFlags.Static) != null;
             ok &= found;
@@ -93,9 +93,9 @@ static class Contract
         bridge.OnDisable();
         int subscribersAfter = (int)Property("SubscriberCount")!;
         string statusAfter = (string)api.GetMethod("Status", BindingFlags.Public | BindingFlags.Static)!.Invoke(null, null)!;
-        bool detached = subscribersAfter == 0 && statusAfter.Contains("\"spriteResolver\":false", StringComparison.Ordinal) && statusAfter.Contains("\"itemResolver\":false", StringComparison.Ordinal);
+        bool detached = subscribersAfter == 0 && statusAfter.Contains("\"spriteResolver\":false", StringComparison.Ordinal);
         ok &= detached;
-        checks.Add(new { target = "disabling the beauty Mod releases its subscription and resolvers", found = detached });
+        checks.Add(new { target = "disabling the beauty Mod releases its subscription and resolver", found = detached });
         loaded.IsEnabled = false;
         PortraitRuntime.Unity.RuntimeMod.RefreshContentSources();
         ModLoader.Mods.Remove(loaded);

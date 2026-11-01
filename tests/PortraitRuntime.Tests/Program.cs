@@ -172,17 +172,19 @@ Test("anonymous change items are never bound to a named character", () =>
         Check(catalog.Character(c.Identity, c.Factory) == null, id + " was bound to " + catalog.Character(c.Identity, c.Factory)?.Id);
     }
 });
-Test("pack registry answers special and item lookups", () =>
+Test("pack registry answers special lookups", () =>
 {
     var core = new Catalog(); core.Add(ReadPack("core"));
-    var special = SpriteLookup.ResolveAsset(core, "special", "wanted");
-    Check(special.Ok && special.Pack == "core" && "special/" + "wanted.png" == "special/" + System.IO.Path.GetFileName(special.Path), "special wanted -> " + special.Path);
-    Check(!SpriteLookup.ResolveAsset(core, "special", "mentor").Ok, "a portrait sprite is not a special");
+    var special = SpriteLookup.ResolveSpecial(core, "wanted");
+    Check(special.Ok && special.Pack == "core" && System.IO.Path.GetFileName(special.Path) == "wanted.png", "special wanted -> " + special.Path);
+    Check(!SpriteLookup.ResolveSpecial(core, "mentor").Ok, "a portrait sprite is not a special");
+    Check(!SpriteLookup.ResolveSpecial(core, "demo.signal").Ok, "an item id is not a special");
+    Check(SpriteLookup.ResolveSpecial(null, "wanted").Reason == "runtime-absent");
+});
+Test("item icons stay with the pack-declared item runtime", () =>
+{
     var demo = new Catalog(); demo.Add(ReadPack("demo"));
-    var icon = SpriteLookup.ResolveAsset(demo, "item", "demo.signal");
-    Check(icon.Ok && icon.Pack == "demo" && icon.Path != null, "item icon -> " + icon.Path);
-    Check(!SpriteLookup.ResolveAsset(demo, "item", "no.such.item").Ok);
-    Check(SpriteLookup.ResolveAsset(null, "special", "wanted").Reason == "runtime-absent");
+    Check(demo.ItemIcons.TryGetValue("demo.signal", out var icon) && icon.Value.Icon != null, "item icon must remain registered");
 });
 Console.WriteLine($"RESULT {passed} passed; {failed} failed");
 Environment.ExitCode = failed == 0 ? 0 : 1;

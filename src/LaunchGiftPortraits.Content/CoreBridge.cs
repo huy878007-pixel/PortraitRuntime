@@ -48,7 +48,6 @@ static class CoreBridge
 
     /// <summary>Register the delegate the core consults instead of guessing a replacement itself.</summary>
     public static void SetSpriteResolver(object resolver) => Invoke("SetSpriteResolver", resolver);
-    public static void SetItemResolver(object resolver) => Invoke("SetItemResolver", resolver);
     public static bool ApplyTo(object owner, string pack, string path) => Invoke("ApplyTo", owner, pack, path) is bool applied && applied;
     public static void ReleaseTo(object owner) => Invoke("ReleaseTo", owner);
 

@@ -167,17 +167,17 @@ public static class Hooks
     static void ItemSprite(GameItemElement __instance, ref Sprite __result)
     {
         if (!Active || __result == null) return;
-        var resolver = PortraitApi.ItemResolver;
-        if (resolver == null) return;
-        string answer;
-        try { answer = resolver(__instance.identifier ?? ""); }
-        catch (Exception e) { RuntimeMod.Log("Item resolver failed: " + e.Message); return; }
-        if (string.IsNullOrEmpty(answer)) return;
-        var r = RuntimeMod.Current;
-        var creator = r.Catalog.ItemCreators.TryGetValue(__instance.identifier ?? "", out var created) ? created : null;
-        Vector2? logicalSize = creator != null ? new Vector2(creator.Value.Grid[0] * (UISettings.current?.gridSize ?? 16), creator.Value.Grid[1] * (UISettings.current?.gridSize ?? 16)) : null;
-        var replaced = PortraitApi.Load(answer, __result, __instance, logicalSize);
-        if (replaced != null) __result = replaced;
+        // Item icons are pack-declared content of the item runtime, not character art: the core applies
+        // whatever a pack declares. Only character and scene artwork is delegated to a content Mod.
+        var runtime = RuntimeMod.Current;
+        if (!runtime.Catalog.ItemIcons.TryGetValue(__instance.identifier ?? "", out var entry) || entry.Value.Icon == null) return;
+        try
+        {
+            var creator = runtime.Catalog.ItemCreators.TryGetValue(__instance.identifier ?? "", out var created) ? created : null;
+            Vector2? logicalSize = creator != null ? new Vector2(creator.Value.Grid[0] * (UISettings.current?.gridSize ?? 16), creator.Value.Grid[1] * (UISettings.current?.gridSize ?? 16)) : null;
+            __result = runtime.Assets.Get(entry.Pack, entry.Value.Icon, __result, __instance, logicalSize);
+        }
+        catch (Exception e) { RuntimeMod.Log("Item icon " + entry.Id + ": " + e.Message); }
     }
     static void Owned(GameItem item, bool own)
     {
