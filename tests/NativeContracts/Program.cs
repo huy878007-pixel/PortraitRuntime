@@ -96,6 +96,15 @@ static class Contract
         bool detached = subscribersAfter == 0 && statusAfter.Contains("\"spriteResolver\":false", StringComparison.Ordinal);
         ok &= detached;
         checks.Add(new { target = "disabling the beauty Mod releases its subscription and resolver", found = detached });
+        // The native loader can enable the content Mod before the core assembly exists, so binding
+        // must be repeatable rather than fatal.
+        var tryBind = bridgeType.GetMethod("TryBind", BindingFlags.Public | BindingFlags.Static)!;
+        bool rebound = tryBind.Invoke(null, null) is bool first && first;
+        string reboundStatus = (string)api.GetMethod("Status", BindingFlags.Public | BindingFlags.Static)!.Invoke(null, null)!;
+        rebound &= (int)Property("SubscriberCount")! == 1 && reboundStatus.Contains("\"spriteResolver\":true", StringComparison.Ordinal);
+        ok &= rebound;
+        checks.Add(new { target = "beauty Mod binds late when the core is loaded after it", found = rebound });
+        bridge.OnDisable();
         loaded.IsEnabled = false;
         PortraitRuntime.Unity.RuntimeMod.RefreshContentSources();
         ModLoader.Mods.Remove(loaded);

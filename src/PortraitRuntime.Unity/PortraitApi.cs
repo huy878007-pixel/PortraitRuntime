@@ -97,6 +97,20 @@ public static class PortraitApi
     public static void Restore() => RuntimeMod.Current?.Portrait.Restore();
 
     /// <summary>
+    /// Re-announce whoever is on screen. A content Mod that finished binding late (the loader may
+    /// load it before this assembly exists) calls this once to catch up instead of waiting for the
+    /// next visitor.
+    /// </summary>
+    public static void Sync()
+    {
+        var runtime = RuntimeMod.Current;
+        if (runtime == null || !runtime.Enabled) return;
+        var client = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
+        var renderer = StoreUIManager.Instance?.clientGameObject?.image ?? StoreClientMono.Instance?.image;
+        if (client != null && runtime.Portrait.Bind(renderer)) Raise(Arrival, RuntimeMod.Context(client, renderer));
+    }
+
+    /// <summary>
     /// Apply a resolved asset to an arbitrary renderer the content Mod located itself
     /// (a scene special, an item icon). Returns false when the target is gone.
     /// </summary>

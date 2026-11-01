@@ -116,7 +116,7 @@ public sealed class RuntimeMod : IMod
         UnityEngine.SceneManagement.SceneManager.sceneLoaded += SceneLoaded;
         RegisterActors();
         foreach (var directory in UObj.FindObjectsOfType<ModItemDirectory>()) RegisterItems(directory);
-        Log("Enabled; F3 debug console, F10 display settings, F11 diagnostics");
+        Log("Enabled; F3 debug console, F11 diagnostics. Display settings come from an enabled content Mod.");
         PortraitApi.Raise(PortraitApi.Enabled, new { version = PortraitApi.Version, packs = Catalog.Packs.Select(x => x.Id).ToArray() });
     }
     public void OnDisable()

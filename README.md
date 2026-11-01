@@ -1,6 +1,6 @@
 # 深空内容核心库 PortraitRuntime
 
-本地开发版本 0.3.2。目标游戏：Probably Stolen 0.46D / BuildID 26337366。
+本地开发版本 0.3.3。目标游戏：Probably Stolen 0.46D / BuildID 26337366。
 
 交付分为两个 Mod：`player.portraitruntime` 是不含美术内容的核心库；`player.launchgiftportraits` 是依赖核心库的人物美化内容版。后者替换旧同 ID 独立美化版，安装前请备份旧版到 Mods 目录外。核心可单独使用。
 

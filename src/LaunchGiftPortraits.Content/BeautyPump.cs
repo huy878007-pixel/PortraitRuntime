@@ -1,36 +1,49 @@
 using UnityEngine;
-using UObj = UnityEngine.Object;
 
 namespace LaunchGiftPortraits.Content;
 
 /// <summary>
-/// Drives this Mod's own presentation layer: the F10 hotkey, per-frame offsets and the settings window.
-/// The core runtime no longer runs any beauty frame loop.
+/// Drives this Mod's own presentation layer: the F10 hotkey, per-frame offsets and the settings
+/// window. It also retries the core handshake, because the native loader can enable this Mod before
+/// the core assembly is loaded.
 /// </summary>
 public sealed class BeautyPump : MonoBehaviour
 {
     public static BeautyPump Instance { get; private set; }
-    public DisplaySettings Settings { get; private set; }
+    int nextBind;
 
-    internal void Attach(DisplaySettings settings) { Settings = settings; Instance = this; }
+    void Awake() => Instance = this;
 
     void Update()
     {
-        if (Settings == null) return;
-        if (Input.GetKeyDown(Settings.HotkeyCode)) Settings.Toggle();
-        Settings.Tick();
+        if (!Ready()) return;
+        var settings = BeautyContentMod.Settings;
+        if (settings == null) return;
+        if (Input.GetKeyDown(settings.HotkeyCode)) settings.Toggle();
+        settings.Tick();
     }
 
     void LateUpdate()
     {
-        if (Settings == null) return;
-        Settings.CaptureBubble(DialogUIManager.Instance);
-        Settings.Apply(PortraitPolicy.LastPath != null);
+        if (!Ready()) return;
+        var settings = BeautyContentMod.Settings;
+        if (settings == null) return;
+        settings.CaptureBubble(DialogUIManager.Instance);
+        settings.Apply(PortraitPolicy.LastPath != null);
+    }
+
+    /// <summary>Bind to the core, retrying a few times a second until it exists.</summary>
+    bool Ready()
+    {
+        if (CoreBridge.Bound) return true;
+        if (Time.frameCount < nextBind) return false;
+        nextBind = Time.frameCount + 30;
+        return BeautyContentMod.TryBind();
     }
 
     void OnDestroy()
     {
         if (Instance == this) Instance = null;
-        Settings?.Restore();
+        BeautyContentMod.Settings?.Restore();
     }
 }

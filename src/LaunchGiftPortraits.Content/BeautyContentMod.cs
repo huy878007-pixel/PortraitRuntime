@@ -21,23 +21,14 @@ public sealed class BeautyContentMod : IMod
 
     public void OnEnable()
     {
-        if (!CoreBridge.Bind())
-        {
-            Warn("Core runtime not reachable; portrait presentation disabled.");
-            return;
-        }
-        settings = LoadSettings();
-        // This package answers every sprite and item replacement the core asks about, and owns the
-        // scene specials the core no longer knows about.
-        SpritePresenter.Bind();
-        SpecialTargets.Refresh();
-        // The frame host needs a live engine. If it cannot be created the bridge stays bound and the
-        // Mod simply stops presenting, instead of taking the game's mod loader down with it.
+        // The loader does not honour Prerequisites when ordering: this Mod can be enabled before the
+        // core assembly exists. The pump below keeps retrying, so a late bind is normal, not fatal.
+        TryBind();
         try
         {
             host = new GameObject("LaunchGiftPortraits.Lifecycle");
             UObj.DontDestroyOnLoad(host);
-            host.AddComponent<BeautyPump>().Attach(settings);
+            host.AddComponent<BeautyPump>();
         }
         catch (Exception e)
         {
@@ -45,6 +36,19 @@ public sealed class BeautyContentMod : IMod
             Warn("Presentation host unavailable; behaviour only. " + e.GetType().Name);
         }
         Warn("Enabled; " + Diagnostic());
+    }
+
+    /// <summary>Bind once the core exists. Safe and cheap to call repeatedly.</summary>
+    public static bool TryBind()
+    {
+        if (CoreBridge.Bound) return true;
+        if (!CoreBridge.Bind()) return false;
+        settings ??= LoadSettings();
+        SpritePresenter.Bind();
+        SpecialTargets.Refresh();
+        CoreBridge.Sync();          // catch up with the visitor already on screen, if any
+        Warn("Bound to the core runtime; " + Diagnostic());
+        return true;
     }
 
     public void OnDisable()
@@ -67,22 +71,22 @@ public sealed class BeautyContentMod : IMod
         var folder = Path.GetDirectoryName(typeof(BeautyContentMod).Assembly.Location) ?? ".";
         var own = Path.Combine(folder, "ui.json");
         var legacy = CoreBridge.CoreFolder == null ? null : Path.Combine(CoreBridge.CoreFolder, "ui.json");
-        var settings = new DisplaySettings();
-        if (File.Exists(own) || legacy == null || !File.Exists(legacy)) { settings.Load(own); return settings; }
+        var loaded = new DisplaySettings();
+        if (File.Exists(own) || legacy == null || !File.Exists(legacy)) { loaded.Load(own); return loaded; }
         try
         {
-            settings.Load(legacy);
+            loaded.Load(legacy);
             var backup = legacy + ".core-legacy.bak";
             if (!File.Exists(backup)) File.Copy(legacy, backup, false);
-            settings.Save(own);
+            loaded.Save(own);
             Warn("Migrated presentation settings from the core build into " + own);
         }
         catch (Exception e)
         {
             Warn("Legacy ui.json migration failed, keeping defaults: " + e.Message);
-            settings.Load(own);
+            loaded.Load(own);
         }
-        return settings;
+        return loaded;
     }
 
     /// <summary>Diagnostics for the runtime log and the offline contract test.</summary>
@@ -91,5 +95,5 @@ public sealed class BeautyContentMod : IMod
     public static bool BridgeReady => CoreBridge.Bound;
     public static string LastEvent => CoreBridge.LastEvent;
 
-    static void Warn(string text) { try { Debug.Log("[LaunchGiftPortraits] " + text); } catch (Exception) { } }
+    internal static void Warn(string text) { try { Debug.Log("[LaunchGiftPortraits] " + text); } catch (Exception) { } }
 }

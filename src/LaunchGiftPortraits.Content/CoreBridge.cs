@@ -44,6 +44,7 @@ static class CoreBridge
     public static string Lookup(string request) => Call("Lookup", request) as string;
     public static bool Apply(string request) => Call("Apply", request) is bool applied && applied;
     public static void Restore() => api?.GetMethod("Restore", Statics)?.Invoke(null, null);
+    public static void Sync() => api?.GetMethod("Sync", Statics)?.Invoke(null, null);
     public static string Status() => Call("Status", null) as string;
 
     /// <summary>Register the delegate the core consults instead of guessing a replacement itself.</summary>
