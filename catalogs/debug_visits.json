@@ -1,0 +1,3039 @@
+[
+  {
+    "id": "visit/spacerFood",
+    "label": "星际客",
+    "registrationId": "spacerFood",
+    "identity": "spacerFood",
+    "factory": "StoreClientList.CreateSpacerClientFood",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/upperLowerVisitor",
+    "label": "上层区访客",
+    "registrationId": "upperLowerVisitor",
+    "identity": "upperLowerVisitor",
+    "factory": "StoreClientList.CreateUpperLowerVisitor",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/upperLowerVisitorLuxury",
+    "label": "上层区访客",
+    "registrationId": "upperLowerVisitorLuxury",
+    "identity": "upperLowerVisitorLuxury",
+    "factory": "StoreClientList.CreateUpperLowerVisitorLuxury",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/ulDiscerningShopper",
+    "label": "上层区访客",
+    "registrationId": "ulDiscerningShopper",
+    "identity": "ulDiscerningShopper",
+    "factory": "StoreClientList.CreateDiscerningShopper",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scalper",
+    "label": "黄牛贩子",
+    "registrationId": "scalper",
+    "identity": "scalper",
+    "factory": "StoreClientListSpec.CreateScalper",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetShadyMerchantSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/appraisalBoardPromotion",
+    "label": "鉴定委员会成员",
+    "registrationId": "appraisalBoardPromotion",
+    "identity": "appraisalBoardPromotion",
+    "factory": "StoreClientListAppraisal.CreatePromotionOffer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetClerkSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/poisonBuyer",
+    "label": "可疑的买家",
+    "registrationId": "poisonBuyer",
+    "identity": "poisonBuyer",
+    "factory": "StoreClientList.CreatePoisonBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/spacerFoodVariety",
+    "label": "星际客",
+    "registrationId": "spacerFoodVariety",
+    "identity": "spacerFoodVariety",
+    "factory": "StoreClientList.CreateSpacerClientFoodVariety",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/spacerAmenityVariety",
+    "label": "星际客",
+    "registrationId": "spacerAmenityVariety",
+    "identity": "spacerAmenityVariety",
+    "factory": "StoreClientList.CreateSpacerClientAmenityVariety",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/junker",
+    "label": "废料客",
+    "registrationId": "junker",
+    "identity": "junker",
+    "factory": "StoreClientList.CreateJunker",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/junker2",
+    "label": "废料客",
+    "registrationId": "junker2",
+    "identity": "junker2",
+    "factory": "StoreClientList.CreateJunkerSellOnly",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/farmer_standard",
+    "label": "水培农场主",
+    "registrationId": "farmer_standard",
+    "identity": "farmer_standard",
+    "factory": "StoreClientList.CreateFarmerClientStandard",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomFarmerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavStamp",
+    "label": "拾荒客",
+    "registrationId": "scavStamp",
+    "identity": "scavStamp",
+    "factory": "StoreClientList.CreateStampSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/inventor",
+    "label": "杰克逊博士",
+    "registrationId": "inventor",
+    "identity": "inventor",
+    "factory": "StoreClientList.CreateInventor",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetInventorSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/merchant",
+    "label": "商人",
+    "registrationId": "merchant",
+    "identity": "merchant",
+    "factory": "StoreClientList.CreateMerchant",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMerchantSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/shadyMerchant",
+    "label": "可疑的商人",
+    "registrationId": "shadyMerchant",
+    "identity": "shadyMerchant",
+    "factory": "StoreClientList.CreateShadyMerchant",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetShadyMerchantSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/shadyPharma",
+    "label": "上层区药商",
+    "registrationId": "shadyPharma",
+    "identity": "shadyPharma",
+    "factory": "StoreClientList.CreateShadyPharmacist",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScientistSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/machine_scrapper",
+    "label": "废料拆解工",
+    "registrationId": "machine_scrapper",
+    "identity": "machine_scrapper",
+    "factory": "StoreClientList.CreateScrapper",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lowerLevelChemist",
+    "label": "下层区化学家",
+    "registrationId": "lowerLevelChemist",
+    "identity": "lowerLevelChemist",
+    "factory": "StoreClientList.CreateLowerLevelChemist",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScientistSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/miner",
+    "label": "矿工",
+    "registrationId": "miner",
+    "identity": "miner",
+    "factory": "StoreClientList.CreateMiner",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMinerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavGeneral",
+    "label": "拾荒客",
+    "registrationId": "scavGeneral",
+    "identity": "scavGeneral",
+    "factory": "StoreClientList.CreateScavGeneral",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavCrate",
+    "label": "拾荒客",
+    "registrationId": "scavCrate",
+    "identity": "scavCrate",
+    "factory": "StoreClientList.CreateScavCrate",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavInspectable",
+    "label": "拾荒客",
+    "registrationId": "scavInspectable",
+    "identity": "scavInspectable",
+    "factory": "StoreClientList.CreateInsScav",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/thief",
+    "label": "小偷",
+    "registrationId": "thief",
+    "identity": "thief",
+    "factory": "StoreClientList.CreateThief",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/pettyThief",
+    "label": "扒手",
+    "registrationId": "pettyThief",
+    "identity": "pettyThief",
+    "factory": "StoreClientList.CreatePettyThief",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/foodThief",
+    "label": "食物窃贼",
+    "registrationId": "foodThief",
+    "identity": "foodThief",
+    "factory": "StoreClientList.CreateFoodThief",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/supplier",
+    "label": "补给运输员",
+    "registrationId": "supplier",
+    "identity": "supplier",
+    "factory": "StoreClientList.CreateSupplier",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMerchantSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/supplierIntro",
+    "label": "供货商",
+    "registrationId": "supplierIntro",
+    "identity": "supplierIntro",
+    "factory": "StoreClientList.CreateSupplierIntro",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMerchantSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/waterSeller",
+    "label": "水贩",
+    "registrationId": "waterSeller",
+    "identity": "waterSeller",
+    "factory": "StoreClientList.CreateWaterSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMerchantSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/landlord",
+    "label": "房东",
+    "registrationId": "landlord",
+    "identity": "landlord",
+    "factory": "StoreClientList.CreateLandlordClient",
+    "spriteKey": "landlord",
+    "spriteExpressions": [
+      "\"landlord\""
+    ]
+  },
+  {
+    "id": "visit/scavBlood",
+    "label": "面色惨白的拾荒客",
+    "registrationId": "scavBlood",
+    "identity": "scavBlood",
+    "factory": "StoreClientList.CreateScavBlood",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/loan_shark",
+    "label": "高利贷者",
+    "registrationId": "loan_shark",
+    "identity": "loan_shark",
+    "factory": "StoreClientList.CreateLoanSharkIntro",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetLoanSharkSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/loan_shark2",
+    "label": "高利贷者",
+    "registrationId": "loan_shark2",
+    "identity": "loan_shark2",
+    "factory": "StoreClientList.CreateLoanShark2",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetLoanSharkSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/loan_shark_collect",
+    "label": "高利贷者",
+    "registrationId": "loan_shark_collect",
+    "identity": "loan_shark_collect",
+    "factory": "StoreClientList.CreateLoanSharkCollect",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetLoanSharkSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/mercenaryBuyer",
+    "label": "雇佣兵",
+    "registrationId": "mercenaryBuyer",
+    "identity": "mercenaryBuyer",
+    "factory": "StoreClientList.CreateMercBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMercSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/revolutionaryBuyer",
+    "label": "革命军战士",
+    "registrationId": "revolutionaryBuyer",
+    "identity": "revolutionaryBuyer",
+    "factory": "StoreClientListRev.CreateRevolutionaryBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomRevSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lower_level_gunsmith",
+    "label": "下层区枪匠",
+    "registrationId": "lower_level_gunsmith",
+    "identity": "lower_level_gunsmith",
+    "factory": "StoreClientList.CreateGunsmith",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/ll_gun_buyer",
+    "label": "下层区公民",
+    "registrationId": "ll_gun_buyer",
+    "identity": "ll_gun_buyer",
+    "factory": "StoreClientListGun.CreateLLGunBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/merc_gun_buyer",
+    "label": "雇佣兵",
+    "registrationId": "merc_gun_buyer",
+    "identity": "merc_gun_buyer",
+    "factory": "StoreClientListGun.CreateMercGunBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMercSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/ul_gun_buyer",
+    "label": "上层区公民",
+    "registrationId": "ul_gun_buyer",
+    "identity": "ul_gun_buyer",
+    "factory": "StoreClientListGun.CreateULBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/ll_gun_seller",
+    "label": "下层区公民",
+    "registrationId": "ll_gun_seller",
+    "identity": "ll_gun_seller",
+    "factory": "StoreClientListGun.CreateLLGunSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/merc_gun_seller",
+    "label": "雇佣兵",
+    "registrationId": "merc_gun_seller",
+    "identity": "merc_gun_seller",
+    "factory": "StoreClientListGun.CreateMercGunSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMercSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/ul_gun_seller",
+    "label": "上层区公民",
+    "registrationId": "ul_gun_seller",
+    "identity": "ul_gun_seller",
+    "factory": "StoreClientListGun.CreateULGunSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMercSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lower_level_rare_merchant",
+    "label": "稀有品商人",
+    "registrationId": "lower_level_rare_merchant",
+    "identity": "lower_level_rare_merchant",
+    "factory": "StoreClientList.CreateLowerLevelRareMerchant",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/rareLowerLevelChemist",
+    "label": "药商",
+    "registrationId": "rareLowerLevelChemist",
+    "identity": "rareLowerLevelChemist",
+    "factory": "StoreClientList.CreateRareLowerLevelChemist",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScientistSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/secSurplusMerchant",
+    "label": "治安部征用官",
+    "registrationId": "secSurplusMerchant",
+    "identity": "secSurplusMerchant",
+    "factory": "StoreClientList.CreateSecSurplusMerchant",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomSecSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/secRequisitionOfficer",
+    "label": "治安部征用官",
+    "registrationId": "secRequisitionOfficer",
+    "identity": "secRequisitionOfficer",
+    "factory": "StoreClientList.CreateSecRequisitionOfficer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomSecSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/cluelessTouristBuyer",
+    "label": "游客",
+    "registrationId": "cluelessTouristBuyer",
+    "identity": "cluelessTouristBuyer",
+    "factory": "StoreClientList.CreateCluelessTouristBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/brokeUpperLevel",
+    "label": "上层区公民",
+    "registrationId": "brokeUpperLevel",
+    "identity": "brokeUpperLevel",
+    "factory": "StoreClientList.CreateBrokeUpperLevel",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperMaleSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/touristWeaponSouvenirBuyer",
+    "label": "空间站游客",
+    "registrationId": "touristWeaponSouvenirBuyer",
+    "identity": "touristWeaponSouvenirBuyer",
+    "factory": "StoreClientList.CreateTouristWeaponSouvenirBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/touristJunkSouvenirBuyer",
+    "label": "空间站游客",
+    "registrationId": "touristJunkSouvenirBuyer",
+    "identity": "touristJunkSouvenirBuyer",
+    "factory": "StoreClientList.CreateTouristJunkSouvenirBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/foodBankBuyer",
+    "label": "粮站供应商",
+    "registrationId": "foodBankBuyer",
+    "identity": "foodBankBuyer",
+    "factory": "StoreClientList.CreateFoodBankBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/criminalBuyerThief",
+    "label": "来买东西的小偷",
+    "registrationId": "criminalBuyerThief",
+    "identity": "criminalBuyerThief",
+    "factory": "StoreClientList.CreateCriminalBuyerThief",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/criminalBuyerMerc",
+    "label": "来买东西的雇佣兵",
+    "registrationId": "criminalBuyerMerc",
+    "identity": "criminalBuyerMerc",
+    "factory": "StoreClientList.CreateCriminelMerc",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMercSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/upperLevelCharity",
+    "label": "上层区志愿者",
+    "registrationId": "upperLevelCharity",
+    "identity": "upperLevelCharity",
+    "factory": "StoreClientList.CreateUpperLevelCharity",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lotteryRep",
+    "label": "彩票代表",
+    "registrationId": "lotteryRep",
+    "identity": "lotteryRep",
+    "factory": "StoreClientList.CreateLotteryRep",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "LocHelper.GetLocalizedClientName(\"name_trade_board_official\")"
+    ]
+  },
+  {
+    "id": "visit/inventorStorage",
+    "label": "杰克逊博士",
+    "registrationId": "inventorStorage",
+    "identity": "inventorStorage",
+    "factory": "StoreClientList.CreateInventorStorage",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetInventorSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavAppraisal",
+    "label": "拾荒客",
+    "registrationId": "scavAppraisal",
+    "identity": "scavAppraisal",
+    "factory": "StoreClientListAppraisal.CreateAppraisal1",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavAppraisalRandom",
+    "label": "拾荒客",
+    "registrationId": "scavAppraisalRandom",
+    "identity": "scavAppraisalRandom",
+    "factory": "StoreClientListAppraisal.CreateAppraisalRandom",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/addictBarter",
+    "label": "瘾君子拾荒客",
+    "registrationId": "addictBarter",
+    "identity": "addictBarter",
+    "factory": "StoreClientListBarter.CreateAddict",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/addictGeneralBarter",
+    "label": "瘾君子拾荒客",
+    "registrationId": "addictGeneralBarter",
+    "identity": "addictGeneralBarter",
+    "factory": "StoreClientListBarter.CreateAddictGeneral",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/storyFoodBarter",
+    "label": "贫穷的拾荒客",
+    "registrationId": "storyFoodBarter",
+    "identity": "storyFoodBarter",
+    "factory": "StoreClientListBarter.CreateBasicFoodBarterTutorial",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/addictBarterBlood",
+    "label": "瘾君子",
+    "registrationId": "addictBarterBlood",
+    "identity": "addictBarterBlood",
+    "factory": "StoreClientListBarter.CreateAddictBlood",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavBarter",
+    "label": "拾荒客",
+    "registrationId": "scavBarter",
+    "identity": "scavBarter",
+    "factory": "StoreClientListBarter.CreateScavBarter",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lowerLevelChemistBarter",
+    "label": "下层区化学家",
+    "registrationId": "lowerLevelChemistBarter",
+    "identity": "lowerLevelChemistBarter",
+    "factory": "StoreClientListBarter.CreateLowerLevelChemistBarter",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/normalFoodBarter",
+    "label": "贫穷的拾荒客",
+    "registrationId": "normalFoodBarter",
+    "identity": "normalFoodBarter",
+    "factory": "StoreClientListBarter.CreateNormalFoodBarter",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/iceMiner",
+    "label": "冰矿工",
+    "registrationId": "iceMiner",
+    "identity": "iceMiner",
+    "factory": "StoreClientListEvent.CreateIceMiner",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.getRandomPilotSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/foreman",
+    "label": "工头",
+    "registrationId": "foreman",
+    "identity": "foreman",
+    "factory": "StoreClientListEvent.CreateForeman",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomEngSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavengerHousehold",
+    "label": "拾荒客",
+    "registrationId": "scavengerHousehold",
+    "identity": "scavengerHousehold",
+    "factory": "StoreClientListEvent.CreateScavengerHouseholdClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/panicBuyer",
+    "label": "星际客",
+    "registrationId": "panicBuyer",
+    "identity": "panicBuyer",
+    "factory": "StoreClientListEvent.CreatePanicBuyerClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/corporateBuyer",
+    "label": "企业代表",
+    "registrationId": "corporateBuyer",
+    "identity": "corporateBuyer",
+    "factory": "StoreClientListEvent.CreateCorporateBuyerClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/generic_water_buyer",
+    "label": "下层区公民",
+    "registrationId": "generic_water_buyer",
+    "identity": "generic_water_buyer",
+    "factory": "StoreClientListEvent.CreateGenericWaterBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/foodBuyer",
+    "label": "食物买家",
+    "registrationId": "foodBuyer",
+    "identity": "foodBuyer",
+    "factory": "StoreClientListEvent.CreateFoodBuyerClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/pharmacist",
+    "label": "药商",
+    "registrationId": "pharmacist",
+    "identity": "pharmacist",
+    "factory": "StoreClientListEvent.CreatePharmacistClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScientistSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/farmerSeedBuyer",
+    "label": "农场主",
+    "registrationId": "farmerSeedBuyer",
+    "identity": "farmerSeedBuyer",
+    "factory": "StoreClientListEvent.CreateFarmerSeedClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomFarmerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lynching_citizen",
+    "label": "愤怒的公民",
+    "registrationId": "lynching_citizen",
+    "identity": "lynching_citizen",
+    "factory": "StoreClientListEvent.CreateLynchingCitizen",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/clinicVolunteer",
+    "label": "诊所志愿者",
+    "registrationId": "clinicVolunteer",
+    "identity": "clinicVolunteer",
+    "factory": "StoreClientListEvent.CreateClinicVolunteerClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMedSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lowerLevelCitizenPowerBuying",
+    "label": "下层区公民",
+    "registrationId": "lowerLevelCitizenPowerBuying",
+    "identity": "lowerLevelCitizenPowerBuying",
+    "factory": "StoreClientListEvent.CreatePowerEventLLBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lowerLevelCitizenMaintenanceBuying",
+    "label": "下层区公民",
+    "registrationId": "lowerLevelCitizenMaintenanceBuying",
+    "identity": "lowerLevelCitizenMaintenanceBuying",
+    "factory": "StoreClientListEvent.CreatePowerMaintenanceEventLLBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/upperLevelCitizenPowerBuying",
+    "label": "上层区居民",
+    "registrationId": "upperLevelCitizenPowerBuying",
+    "identity": "upperLevelCitizenPowerBuying",
+    "factory": "StoreClientListEvent.CreatePowerEventULBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/panickedShopkeeperWeaponBuyer",
+    "label": "惊恐的店主",
+    "registrationId": "panickedShopkeeperWeaponBuyer",
+    "identity": "panickedShopkeeperWeaponBuyer",
+    "factory": "StoreClientListEvent.CreatePanickedShopkeeperBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/shadyCustomerInformation",
+    "label": "可疑的顾客",
+    "registrationId": "shadyCustomerInformation",
+    "identity": "shadyCustomerInformation",
+    "factory": "StoreClientListInformation.CreateShadyCustomer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/stationEngineerMinor",
+    "label": "空间站工程师",
+    "registrationId": "stationEngineerMinor",
+    "identity": "stationEngineerMinor",
+    "factory": "StoreClientListMinor.CreateStationEngineer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomEngSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/minerMinor",
+    "label": "矿工",
+    "registrationId": "minerMinor",
+    "identity": "minerMinor",
+    "factory": "StoreClientListMinor.CreateMinerMinor",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMinerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/nurseMinor",
+    "label": "中层区护士",
+    "registrationId": "nurseMinor",
+    "identity": "nurseMinor",
+    "factory": "StoreClientListMinor.CreateNurse1",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScientistSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/nurseMinor2",
+    "label": "下层区护士",
+    "registrationId": "nurseMinor2",
+    "identity": "nurseMinor2",
+    "factory": "StoreClientListMinor.CreateNurse2",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScientistSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavWaterMinor",
+    "label": "患病的拾荒客",
+    "registrationId": "scavWaterMinor",
+    "identity": "scavWaterMinor",
+    "factory": "StoreClientListMinor.CreateScavWater",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavHaul",
+    "label": "拾荒客",
+    "registrationId": "scavHaul",
+    "identity": "scavHaul",
+    "factory": "StoreClientListMinor.CreateScavHaul",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/patrolOfficer",
+    "label": "治安部警官",
+    "registrationId": "patrolOfficer",
+    "identity": "patrolOfficer",
+    "factory": "StoreClientListMinor.CreatePatrolOfficer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomSecSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/woundedMan",
+    "label": "受伤的男人",
+    "registrationId": "woundedMan",
+    "identity": "woundedMan",
+    "factory": "StoreClientListMinor.CreateWounded",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomBMMaleSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/upperLevelVisitorMinor",
+    "label": "上层区公民",
+    "registrationId": "upperLevelVisitorMinor",
+    "identity": "upperLevelVisitorMinor",
+    "factory": "StoreClientListMinor.CreateUpperLevelVisitor",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/minorMerc",
+    "label": "雇佣兵",
+    "registrationId": "minorMerc",
+    "identity": "minorMerc",
+    "factory": "StoreClientListMinor.CreateMinorMerc",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMercSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/annoyedEngineer",
+    "label": "烦躁的工程师",
+    "registrationId": "annoyedEngineer",
+    "identity": "annoyedEngineer",
+    "factory": "StoreClientListMinor.CreateAnnoyedEngineer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomEngSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/salvagePilot",
+    "label": "打捞船飞行员",
+    "registrationId": "salvagePilot",
+    "identity": "salvagePilot",
+    "factory": "StoreClientListMinor.CreateSalvagePilot",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.getRandomPilotSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/sickLowers",
+    "label": "患病的下层区公民",
+    "registrationId": "sickLowers",
+    "identity": "sickLowers",
+    "factory": "StoreClientListMinor.CreateSickLowers",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lowerLevelElder",
+    "label": "下层区长者",
+    "registrationId": "lowerLevelElder",
+    "identity": "lowerLevelElder",
+    "factory": "StoreClientListMinor.CreateLowerLevelElder",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomElderSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/OldScav1",
+    "label": "老拾荒客",
+    "registrationId": "OldScav1",
+    "identity": "OldScav1",
+    "factory": "StoreClientListMinor.CreateOldScav",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomElderSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lover",
+    "label": "绝望的爱人",
+    "registrationId": "lover",
+    "identity": "lover",
+    "factory": "StoreClientListMinor.CreateLover",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/farmerMinor",
+    "label": "水培农场主",
+    "registrationId": "farmerMinor",
+    "identity": "farmerMinor",
+    "factory": "StoreClientListMinor.CreateFarmerMinor",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomFarmerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lotteryWinnerMinor",
+    "label": "上层区公民",
+    "registrationId": "lotteryWinnerMinor",
+    "identity": "lotteryWinnerMinor",
+    "factory": "StoreClientListMinor.CreateLotteryWinner",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/peatMinorClient",
+    "label": "拾荒客",
+    "registrationId": "peatMinorClient",
+    "identity": "peatMinorClient",
+    "factory": "StoreClientListMinor.CreatePeatClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/conspiracyMinor",
+    "label": "阴谋论者",
+    "registrationId": "conspiracyMinor",
+    "identity": "conspiracyMinor",
+    "factory": "StoreClientListMinor.CreateConspiracyClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavMaleSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/upperLevelServantHoboParty",
+    "label": "上层区仆从",
+    "registrationId": "upperLevelServantHoboParty",
+    "identity": "upperLevelServantHoboParty",
+    "factory": "StoreClientListMinor.CreateUpperLevelServant",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/radioactiveWasteCustomer",
+    "label": "企业废弃物管理员",
+    "registrationId": "radioactiveWasteCustomer",
+    "identity": "radioactiveWasteCustomer",
+    "factory": "StoreClientListMinor.CreateRadioactiveWasteCustomer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/securityOfficer",
+    "label": "治安部警官",
+    "registrationId": "securityOfficer",
+    "identity": "securityOfficer",
+    "factory": "StoreClientListSecurity.CreateSecurityOfficer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomSecSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/securityOfficerFine",
+    "label": "治安部警官",
+    "registrationId": "securityOfficerFine",
+    "identity": "securityOfficer",
+    "factory": "StoreClientListSecurity.CreateSecurityOfficer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomSecSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/securityOfficerArrest",
+    "label": "治安部警官",
+    "registrationId": "securityOfficerArrest",
+    "identity": "securityOfficer",
+    "factory": "StoreClientListSecurity.CreateSecurityOfficer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomSecSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/securityOfficerExecution",
+    "label": "治安部警官",
+    "registrationId": "securityOfficerExecution",
+    "identity": "securityOfficer",
+    "factory": "StoreClientListSecurity.CreateSecurityOfficer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomSecSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/securityOfficerRevokePermit",
+    "label": "治安部警官",
+    "registrationId": "securityOfficerRevokePermit",
+    "identity": "securityOfficerRevokePermit",
+    "factory": "StoreClientListSecurity.CreateRevokePermitOfficer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomSecSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/retired_gunsmith",
+    "label": "退休枪匠",
+    "registrationId": "retired_gunsmith",
+    "identity": "retired_gunsmith",
+    "factory": "StoreClientListSpec.CreateRetiredGunsmith",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/retired_farmer",
+    "label": "退休农夫",
+    "registrationId": "retired_farmer",
+    "identity": "retired_farmer",
+    "factory": "StoreClientListSpec.CreateRetiredFarmer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRetiredFarmerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/retired_rancher",
+    "label": "退休养鼠人",
+    "registrationId": "retired_rancher",
+    "identity": "retired_rancher",
+    "factory": "StoreClientListSpec.CreateRetiredRancher",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomFarmerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/retired_aquafarmer",
+    "label": "退休水产养殖户",
+    "registrationId": "retired_aquafarmer",
+    "identity": "retired_aquafarmer",
+    "factory": "StoreClientListSpec.CreateRetiredAquafarmer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRetiredAquafarmerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/hypertech_smuggler",
+    "label": "超科技走私贩",
+    "registrationId": "hypertech_smuggler",
+    "identity": "hypertech_smuggler",
+    "factory": "StoreClientListSupplier.CreateHypertechSmuggler",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "(RNG.Roll(50) ? SpriteDict.GetRandomBMMaleSpriteName() : SpriteDict.GetRandomBMFemaleSpriteName())"
+    ]
+  },
+  {
+    "id": "visit/retired_water_merchant",
+    "label": "退休水商",
+    "registrationId": "retired_water_merchant",
+    "identity": "retired_water_merchant",
+    "factory": "StoreClientListSpec.CreateRetiredWaterMerchant",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/retired_junker",
+    "label": "退休废料客",
+    "registrationId": "retired_junker",
+    "identity": "retired_junker",
+    "factory": "StoreClientListSpec.CreateRetiredJunker",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/retired_winemaker",
+    "label": "退休酿酒师",
+    "registrationId": "retired_winemaker",
+    "identity": "retired_winemaker",
+    "factory": "StoreClientListSpec.CreateRetiredWinemaker",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomFarmerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/retired_junker_intro",
+    "label": "退休废料客",
+    "registrationId": "retired_junker_intro",
+    "identity": "retired_junker_intro",
+    "factory": "StoreClientListSpec.CreateRetiredJunkerIntro",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/retired_chemist",
+    "label": "退休化学家",
+    "registrationId": "retired_chemist",
+    "identity": "retired_chemist",
+    "factory": "StoreClientListSpec.CreateRetiredChemist",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRetiredChemistSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/mentor",
+    "label": "导师",
+    "registrationId": "mentor",
+    "identity": "mentor",
+    "factory": "StoreClientListStory.CreateMentorClient",
+    "spriteKey": "mentor",
+    "spriteExpressions": [
+      "\"mentor\","
+    ]
+  },
+  {
+    "id": "visit/mentor_event_tip",
+    "label": "导师",
+    "registrationId": "mentor_event_tip",
+    "identity": "mentor_event_tip",
+    "factory": "StoreClientListStory.CreateMentorClientEventTip",
+    "spriteKey": "mentor",
+    "spriteExpressions": [
+      "\"mentor\","
+    ]
+  },
+  {
+    "id": "visit/mentor_visual_inspection",
+    "label": "导师",
+    "registrationId": "mentor_visual_inspection",
+    "identity": "mentor_visual_inspection",
+    "factory": "StoreClientListStory.CreateMentorClientVisualInspection",
+    "spriteKey": "mentor",
+    "spriteExpressions": [
+      "\"mentor\""
+    ]
+  },
+  {
+    "id": "visit/mentor_outro",
+    "label": "导师",
+    "registrationId": "mentor_outro",
+    "identity": "mentor_outro",
+    "factory": "StoreClientListStory.CreateMentorClientOutro",
+    "spriteKey": "mentor",
+    "spriteExpressions": [
+      "\"mentor\""
+    ]
+  },
+  {
+    "id": "visit/mentor_display_case",
+    "label": "导师",
+    "registrationId": "mentor_display_case",
+    "identity": "mentor_display_case",
+    "factory": "StoreClientListStory.CreateMentorDisplayCase",
+    "spriteKey": "mentor",
+    "spriteExpressions": [
+      "\"mentor\""
+    ]
+  },
+  {
+    "id": "visit/mentor_display_case_reminder",
+    "label": "导师",
+    "registrationId": "mentor_display_case_reminder",
+    "identity": "mentor_display_case_reminder",
+    "factory": "StoreClientListStory.CreateMentorDisplayCaseReminder",
+    "spriteKey": "mentor",
+    "spriteExpressions": [
+      "\"mentor\""
+    ]
+  },
+  {
+    "id": "visit/mentorAfterhours",
+    "label": "导师",
+    "registrationId": "mentorAfterhours",
+    "identity": "mentorAfterhours",
+    "factory": "StoreClientListStory.CreateMentorAfterhours",
+    "spriteKey": "mentor",
+    "spriteExpressions": [
+      "\"mentor\","
+    ]
+  },
+  {
+    "id": "visit/janitorIntroduction",
+    "label": "索耶",
+    "registrationId": "janitorIntroduction",
+    "identity": "janitorIntroduction",
+    "factory": "StoreClientListStory.CreateJanitorIntroduction",
+    "spriteKey": "sawyer",
+    "spriteExpressions": [
+      "\"sawyer\""
+    ]
+  },
+  {
+    "id": "visit/janitorUEIntroduction",
+    "label": "索耶",
+    "registrationId": "janitorUEIntroduction",
+    "identity": "janitorUEIntroduction",
+    "factory": "StoreClientListStory.CreateJanitorUndergroundExchangeIntroduction",
+    "spriteKey": "sawyer",
+    "spriteExpressions": [
+      "\"sawyer\""
+    ]
+  },
+  {
+    "id": "visit/janitorUEIntroductionFence",
+    "label": "索耶",
+    "registrationId": "janitorUEIntroductionFence",
+    "identity": "janitorUEIntroductionFence",
+    "factory": "StoreClientListStory.CreateJanitorUndergroundExchangeIntroductionFence",
+    "spriteKey": "sawyer",
+    "spriteExpressions": [
+      "\"sawyer\""
+    ]
+  },
+  {
+    "id": "visit/insuranceIntroduction",
+    "label": "乔·王尔德",
+    "registrationId": "insuranceIntroduction",
+    "identity": "insuranceIntroduction",
+    "factory": "StoreClientListStory.CreateInsuranceIntroduction",
+    "spriteKey": "joe",
+    "spriteExpressions": [
+      "\"joe\""
+    ]
+  },
+  {
+    "id": "visit/wild2",
+    "label": "乔·王尔德",
+    "registrationId": "wild2",
+    "identity": "wild2",
+    "factory": "StoreClientListStory.CreateNetworkIntroduction",
+    "spriteKey": "joe",
+    "spriteExpressions": [
+      "\"joe\""
+    ]
+  },
+  {
+    "id": "visit/wild_upgrade_reminder",
+    "label": "乔·王尔德",
+    "registrationId": "wild_upgrade_reminder",
+    "identity": "wild_upgrade_reminder",
+    "factory": "StoreClientListStory.CreateUpgradeReminder",
+    "spriteKey": "joe",
+    "spriteExpressions": [
+      "\"joe\""
+    ]
+  },
+  {
+    "id": "visit/wild_network_reminder",
+    "label": "乔·王尔德",
+    "registrationId": "wild_network_reminder",
+    "identity": "wild_network_reminder",
+    "factory": "StoreClientListStory.CreateNetworkReminder",
+    "spriteKey": "joe",
+    "spriteExpressions": [
+      "\"joe\""
+    ]
+  },
+  {
+    "id": "visit/wild_bailout",
+    "label": "乔·王尔德",
+    "registrationId": "wild_bailout",
+    "identity": "wild_bailout",
+    "factory": "StoreClientListStory.CreateWildBailout",
+    "spriteKey": "joe",
+    "spriteExpressions": [
+      "\"joe\""
+    ]
+  },
+  {
+    "id": "visit/wildMarketplaceIntro",
+    "label": "乔·王尔德",
+    "registrationId": "wildMarketplaceIntro",
+    "identity": "wildMarketplaceIntro",
+    "factory": "StoreClientListStory.CreateMarketplaceIntro",
+    "spriteKey": "joe",
+    "spriteExpressions": [
+      "\"joe\""
+    ]
+  },
+  {
+    "id": "visit/food_scav_story",
+    "label": "拾荒客",
+    "registrationId": "food_scav_story",
+    "identity": "food_scav_story",
+    "factory": "StoreClientListStory.CreateFoodSellerStory",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/wantedBait",
+    "label": "下层区公民",
+    "registrationId": "wantedBait",
+    "identity": "wantedBait",
+    "factory": "StoreClientListStory.CreateWantedBait",
+    "spriteKey": "wanted_bait1",
+    "spriteExpressions": [
+      "\"wanted_bait1\""
+    ]
+  },
+  {
+    "id": "visit/wanted_intro",
+    "label": "伦警官",
+    "registrationId": "wanted_intro",
+    "identity": "wanted_intro",
+    "factory": "StoreClientListStory.CreateSecWantedIntroduction",
+    "spriteKey": "officer_lun",
+    "spriteExpressions": [
+      "\"officer_lun\""
+    ]
+  },
+  {
+    "id": "visit/wanted_intro2",
+    "label": "伦警官",
+    "registrationId": "wanted_intro2",
+    "identity": "wanted_intro2",
+    "factory": "StoreClientListStory.CreateSecWantedIntroduction2",
+    "spriteKey": "officer_lun",
+    "spriteExpressions": [
+      "\"officer_lun\""
+    ]
+  },
+  {
+    "id": "visit/food_scav_story2",
+    "label": "拾荒客",
+    "registrationId": "food_scav_story2",
+    "identity": "food_scav_story2",
+    "factory": "StoreClientListStory.CreateFoodSellerStory2",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/food_scav_story3",
+    "label": "拾荒客",
+    "registrationId": "food_scav_story3",
+    "identity": "food_scav_story3",
+    "factory": "StoreClientListStory.CreateFoodSellerStory3",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/story_scrap_seller",
+    "label": "拾荒客",
+    "registrationId": "story_scrap_seller",
+    "identity": "story_scrap_seller",
+    "factory": "StoreClientListStory.CreateStoryScrapSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/story_cigarette_vendor",
+    "label": "拾荒客",
+    "registrationId": "story_cigarette_vendor",
+    "identity": "story_cigarette_vendor",
+    "factory": "StoreClientListStory.CreateStoryCigaretteVendor",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/luckyScavStory",
+    "label": "拾荒客",
+    "registrationId": "luckyScavStory",
+    "identity": "luckyScavStory",
+    "factory": "StoreClientListStory.CreateLuckyScavStory",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/appraisalBoardIntro",
+    "label": "鉴定委员会成员",
+    "registrationId": "appraisalBoardIntro",
+    "identity": "appraisalBoardIntro",
+    "factory": "StoreClientListStory.CreateStoryAppraisalBoard",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetClerkSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/appraisalBoardIntro2",
+    "label": "鉴定委员会成员",
+    "registrationId": "appraisalBoardIntro2",
+    "identity": "appraisalBoardIntro2",
+    "factory": "StoreClientListStory.CreateStoryAppraisalBoard2",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetClerkSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/story_cigarette_vendor2",
+    "label": "拾荒客",
+    "registrationId": "story_cigarette_vendor2",
+    "identity": "story_cigarette_vendor2",
+    "factory": "StoreClientListStory.CreateStoryCigaretteVendor2",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/storyWaterVendor",
+    "label": "下层区公民",
+    "registrationId": "storyWaterVendor",
+    "identity": "storyWaterVendor",
+    "factory": "StoreClientListStory.CreateStoryWaterVendor",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/story_water_buyer",
+    "label": "拾荒客",
+    "registrationId": "story_water_buyer",
+    "identity": "story_water_buyer",
+    "factory": "StoreClientListStory.CreateStoryWaterBuyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/story_water_buyer2",
+    "label": "拾荒客",
+    "registrationId": "story_water_buyer2",
+    "identity": "story_water_buyer2",
+    "factory": "StoreClientListStory.CreateStoryWaterBuyer2",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/spacerFoodStory",
+    "label": "星际客",
+    "registrationId": "spacerFoodStory",
+    "identity": "spacerFoodStory",
+    "factory": "StoreClientListStory.CreateFoodBuyerStory",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/offDutyOfficerStoryTreat",
+    "label": "休班警官",
+    "registrationId": "offDutyOfficerStoryTreat",
+    "identity": "offDutyOfficerStoryTreat",
+    "factory": "StoreClientListStory.CreateOffDutyOfficier",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomOffDutySecSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/spacerFoodStory2",
+    "label": "星际客",
+    "registrationId": "spacerFoodStory2",
+    "identity": "spacerFoodStory2",
+    "factory": "StoreClientListStory.CreateFoodBuyerStory2",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/inventorIntro",
+    "label": "杰克逊博士",
+    "registrationId": "inventorIntro",
+    "identity": "inventorIntro",
+    "factory": "StoreClientListStory.CreateInventorIntro",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetInventorSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/inventorModuleIntro",
+    "label": "杰克逊博士",
+    "registrationId": "inventorModuleIntro",
+    "identity": "inventorModuleIntro",
+    "factory": "StoreClientListStory.CreateInventorModuleIntro",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetInventorSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/mentor_sec_record",
+    "label": "导师",
+    "registrationId": "mentor_sec_record",
+    "identity": "mentor_sec_record",
+    "factory": "StoreClientListStory.CreateMentorSecRecord",
+    "spriteKey": "mentor",
+    "spriteExpressions": [
+      "\"mentor\""
+    ]
+  },
+  {
+    "id": "visit/brokenMachineIntro",
+    "label": "废料拆解工",
+    "registrationId": "brokenMachineIntro",
+    "identity": "brokenMachineIntro",
+    "factory": "StoreClientListStory.CreateBrokenMachineIntroduction",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/mentor_bargain",
+    "label": "导师",
+    "registrationId": "mentor_bargain",
+    "identity": "mentor_bargain",
+    "factory": "StoreClientListStory.CreateMentorBargainIntro",
+    "spriteKey": "mentor",
+    "spriteExpressions": [
+      "\"mentor\""
+    ]
+  },
+  {
+    "id": "visit/courrierRedImp",
+    "label": "红魔鬼快递员",
+    "registrationId": "courrierRedImp",
+    "identity": "courrierRedImp",
+    "factory": "StoreClientListSupplier.CreateCourrierBeer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetCourrierSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/courrierMining",
+    "label": "GP采矿快递员",
+    "registrationId": "courrierMining",
+    "identity": "courrierMining",
+    "factory": "StoreClientListSupplier.CreateCourrierMining",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetCourrierSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/courrierChem",
+    "label": "阿希什",
+    "registrationId": "courrierChem",
+    "identity": "courrierChem",
+    "factory": "StoreClientListSupplier.CreateCourrierChem",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetAshishSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/courrierPharma",
+    "label": "快递员",
+    "registrationId": "courrierPharma",
+    "identity": "courrierPharma",
+    "factory": "StoreClientListSupplier.CreateCourrierPharma",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/courrierRedImpFree",
+    "label": "红魔鬼快递员",
+    "registrationId": "courrierRedImpFree",
+    "identity": "courrierRedImpFree",
+    "factory": "StoreClientListSupplier.CreateCourrierBeerFree",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetCourrierSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/courrierMiningFree",
+    "label": "GP采矿快递员",
+    "registrationId": "courrierMiningFree",
+    "identity": "courrierMiningFree",
+    "factory": "StoreClientListSupplier.CreateCourrierMiningFree",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetCourrierSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/courrierChemFree",
+    "label": "阿希什",
+    "registrationId": "courrierChemFree",
+    "identity": "courrierChemFree",
+    "factory": "StoreClientListSupplier.CreateCourrierChemFree",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetAshishSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/courrierPharmaFree",
+    "label": "快递员",
+    "registrationId": "courrierPharmaFree",
+    "identity": "courrierPharmaFree",
+    "factory": "StoreClientListSupplier.CreateCourrierPharmaFree",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/waterScavenger",
+    "label": "拾荒客",
+    "registrationId": "waterScavenger",
+    "identity": "waterScavenger",
+    "factory": "StoreClientListTier.CreateWaterScavenger",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/thirstySpacer",
+    "label": "口渴的星际客",
+    "registrationId": "thirstySpacer",
+    "identity": "thirstySpacer",
+    "factory": "StoreClientListTier.CreateThirstySpacer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavWaterShopper",
+    "label": "拾荒客",
+    "registrationId": "scavWaterShopper",
+    "identity": "scavWaterShopper",
+    "factory": "StoreClientListTier.CreateHydrationSeeker",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/waterSpace2",
+    "label": "星际客",
+    "registrationId": "waterSpace2",
+    "identity": "waterSpace2",
+    "factory": "StoreClientListTier.CreateWaterShopper",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/waterStockpiler",
+    "label": "囤水者",
+    "registrationId": "waterStockpiler",
+    "identity": "waterStockpiler",
+    "factory": "StoreClientListTier.CreateWaterStockPiler",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/spacerFoodI",
+    "label": "星际客",
+    "registrationId": "spacerFoodI",
+    "identity": "spacerFoodI",
+    "factory": "StoreClientListTier.CreateScavFood",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/hungrySpacer",
+    "label": "忍饥挨饿的星际客",
+    "registrationId": "hungrySpacer",
+    "identity": "hungrySpacer",
+    "factory": "StoreClientListTier.CreateHungrySpacer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/spacerChef",
+    "label": "星际客厨师",
+    "registrationId": "spacerChef",
+    "identity": "spacerChef",
+    "factory": "StoreClientListTier.CreateSpacerChef",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomChefSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/expeditionSupplier",
+    "label": "探险供应商",
+    "registrationId": "expeditionSupplier",
+    "identity": "expeditionSupplier",
+    "factory": "StoreClientListTier.CreateExpeditionSupplier",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/privateChef",
+    "label": "上层区私人厨师",
+    "registrationId": "privateChef",
+    "identity": "privateChef",
+    "factory": "StoreClientListTier.CreateUpperPrivateChef",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomChefSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/spacerMedical",
+    "label": "负伤的星际客",
+    "registrationId": "spacerMedical",
+    "identity": "spacerMedical",
+    "factory": "StoreClientListTier.CreateInjuredSpacer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/sickChildCaretaker",
+    "label": "病童看护者",
+    "registrationId": "sickChildCaretaker",
+    "identity": "sickChildCaretaker",
+    "factory": "StoreClientListTier.CreateSickChildCaretaker",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()",
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lowLevelDoctor",
+    "label": "下层区医生",
+    "registrationId": "lowLevelDoctor",
+    "identity": "lowLevelDoctor",
+    "factory": "StoreClientListTier.CreateLowLevelDoctor",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScientistSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/clinicNurse",
+    "label": "中层区护士",
+    "registrationId": "clinicNurse",
+    "identity": "clinicNurse",
+    "factory": "StoreClientListTier.CreateClinicNurse",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScientistSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/hospitalAdmin",
+    "label": "上层区医院供货商",
+    "registrationId": "hospitalAdmin",
+    "identity": "hospitalAdmin",
+    "factory": "StoreClientListTier.CreateHospitalAdmin",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lowerRepairman",
+    "label": "下层区修理工",
+    "registrationId": "lowerRepairman",
+    "identity": "lowerRepairman",
+    "factory": "StoreClientListTier.CreateLowerRepairman",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomEngSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scrap_byer",
+    "label": "废品收购人",
+    "registrationId": "scrap_byer",
+    "identity": "scrap_byer",
+    "factory": "StoreClientListTier.CreateScrapper",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/maintenanceWorker",
+    "label": "维护工人",
+    "registrationId": "maintenanceWorker",
+    "identity": "maintenanceWorker",
+    "factory": "StoreClientListTier.CreateMaintenanceWorker",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomEngSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/lowerInventor",
+    "label": "下层区发明家",
+    "registrationId": "lowerInventor",
+    "identity": "lowerInventor",
+    "factory": "StoreClientListTier.CreateLowerInventor",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomSciFemaleSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/stationEngineer",
+    "label": "空间站工程师",
+    "registrationId": "stationEngineer",
+    "identity": "stationEngineer",
+    "factory": "StoreClientListTier.CreateStationEngineer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomEngSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/spacerHouseholdItem",
+    "label": "星际客",
+    "registrationId": "spacerHouseholdItem",
+    "identity": "spacerHouseholdItem",
+    "factory": "StoreClientListTier.CreateSpacerHousehold",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/youngSpacerHousehold",
+    "label": "年轻的星际客",
+    "registrationId": "youngSpacerHousehold",
+    "identity": "youngSpacerHousehold",
+    "factory": "StoreClientListTier.CreateYoungSpacer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/familyMother",
+    "label": "下层区家长",
+    "registrationId": "familyMother",
+    "identity": "familyMother",
+    "factory": "StoreClientListTier.CreateFamilyMother",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/citizenHousehold",
+    "label": "公民",
+    "registrationId": "citizenHousehold",
+    "identity": "citizenHousehold",
+    "factory": "StoreClientListTier.CreateCitizen",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/upperMaid",
+    "label": "上层区仆从",
+    "registrationId": "upperMaid",
+    "identity": "upperMaid",
+    "factory": "StoreClientListTier.CreateUpperMaid",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/desperateAddict",
+    "label": "绝望的瘾君子",
+    "registrationId": "desperateAddict",
+    "identity": "desperateAddict",
+    "factory": "StoreClientListTierSubstance.CreateDesperateAddict",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/wornOutSpacer",
+    "label": "筋疲力尽的星际客",
+    "registrationId": "wornOutSpacer",
+    "identity": "wornOutSpacer",
+    "factory": "StoreClientListTierSubstance.CreateWornOutSpacer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/upperLevelHedonist",
+    "label": "上层区寻欢客",
+    "registrationId": "upperLevelHedonist",
+    "identity": "upperLevelHedonist",
+    "factory": "StoreClientListTierSubstance.CreateUpperLevelHedonist",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomUpperSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavenger",
+    "label": "拾荒客",
+    "registrationId": "scavenger",
+    "identity": "scavenger",
+    "factory": "StoreClientListTierWeapon.CreateScavenger",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/selfDefenseEnthusiast",
+    "label": "自卫爱好者",
+    "registrationId": "selfDefenseEnthusiast",
+    "identity": "selfDefenseEnthusiast",
+    "factory": "StoreClientListTierWeapon.CreateSelfDefenseEnthusiast",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/privateSecurityContractor",
+    "label": "私人安保承包商",
+    "registrationId": "privateSecurityContractor",
+    "identity": "privateSecurityContractor",
+    "factory": "StoreClientListTierWeapon.CreatePrivateSecurityContractor",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomMercSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/wanted1",
+    "label": "下层区公民",
+    "registrationId": "wanted1",
+    "identity": "wanted1",
+    "factory": "StoreClientListWanted.CreateWanted1",
+    "spriteKey": "wanted1",
+    "spriteExpressions": [
+      "\"wanted1\""
+    ]
+  },
+  {
+    "id": "visit/wanted1_return",
+    "label": "下层区公民",
+    "registrationId": "wanted1_return",
+    "identity": "wanted1_return",
+    "factory": "StoreClientListWanted.CreateWanted1Return",
+    "spriteKey": "wanted1",
+    "spriteExpressions": [
+      "\"wanted1\""
+    ]
+  },
+  {
+    "id": "visit/wanted2",
+    "label": "下层区公民",
+    "registrationId": "wanted2",
+    "identity": "wanted2",
+    "factory": "StoreClientListWanted.CreateWanted2",
+    "spriteKey": "wanted2",
+    "spriteExpressions": [
+      "\"wanted2\""
+    ]
+  },
+  {
+    "id": "visit/wanted2_return",
+    "label": "下层区公民",
+    "registrationId": "wanted2_return",
+    "identity": "wanted2_return",
+    "factory": "StoreClientListWanted.CreateWanted2Return",
+    "spriteKey": "wanted2",
+    "spriteExpressions": [
+      "\"wanted2\""
+    ]
+  },
+  {
+    "id": "visit/sawyerButcherOffer",
+    "label": "索耶",
+    "registrationId": "sawyerButcherOffer",
+    "identity": "sawyerButcherOffer",
+    "factory": "StoreClientListWanted.CreateSawyerButcherOffer",
+    "spriteKey": "sawyer",
+    "spriteExpressions": [
+      "\"sawyer\""
+    ]
+  },
+  {
+    "id": "visit/wanted3",
+    "label": "下层区公民",
+    "registrationId": "wanted3",
+    "identity": "wanted3",
+    "factory": "StoreClientListWanted.CreateWanted3",
+    "spriteKey": "wanted3",
+    "spriteExpressions": [
+      "\"wanted3\""
+    ]
+  },
+  {
+    "id": "visit/wanted4",
+    "label": "奥丁·哈拉尔德森",
+    "registrationId": "wanted4",
+    "identity": "wanted4",
+    "factory": "StoreClientListWanted.CreateWanted4",
+    "spriteKey": "wanted4",
+    "spriteExpressions": [
+      "\"wanted4\""
+    ]
+  },
+  {
+    "id": "visit/wanted4Normal",
+    "label": "奥丁·哈拉尔德森",
+    "registrationId": "wanted4Normal",
+    "identity": "wanted4Normal",
+    "factory": "StoreClientListWanted.CreateWanted4Normal",
+    "spriteKey": "wanted4",
+    "spriteExpressions": [
+      "\"wanted4\""
+    ]
+  },
+  {
+    "id": "visit/wanted5",
+    "label": "卢",
+    "registrationId": "wanted5",
+    "identity": "wanted5",
+    "factory": "StoreClientListWanted.CreateWanted5",
+    "spriteKey": "wanted5",
+    "spriteExpressions": [
+      "\"wanted5\""
+    ]
+  },
+  {
+    "id": "visit/wanted5morning",
+    "label": "卢",
+    "registrationId": "wanted5morning",
+    "identity": "wanted5morning",
+    "factory": "StoreClientListWanted.CreateWanted5Morning",
+    "spriteKey": "wanted5",
+    "spriteExpressions": [
+      "\"wanted5\""
+    ]
+  },
+  {
+    "id": "visit/louBombVisit",
+    "label": "卢",
+    "registrationId": "louBombVisit",
+    "identity": "louBombVisit",
+    "factory": "StoreClientListWanted.CreateLouBombVisit",
+    "spriteKey": "wanted5",
+    "spriteExpressions": [
+      "\"wanted5\""
+    ]
+  },
+  {
+    "id": "visit/louBoxDrop",
+    "label": "卢",
+    "registrationId": "louBoxDrop",
+    "identity": "louBoxDrop",
+    "factory": "StoreClientListWanted.CreateLouBoxDrop",
+    "spriteKey": "wanted5",
+    "spriteExpressions": [
+      "\"wanted5\","
+    ]
+  },
+  {
+    "id": "visit/louBoxCollect",
+    "label": "卢",
+    "registrationId": "louBoxCollect",
+    "identity": "louBoxCollect",
+    "factory": "StoreClientListWanted.CreateLouBoxCollect",
+    "spriteKey": "wanted5",
+    "spriteExpressions": [
+      "\"wanted5\","
+    ]
+  },
+  {
+    "id": "visit/louDisguise",
+    "label": "治安部盘查员",
+    "registrationId": "louDisguise",
+    "identity": "louDisguise",
+    "factory": "StoreClientListWanted.CreateLouDisguise",
+    "spriteKey": "lou_sec",
+    "spriteExpressions": [
+      "\"lou_sec\""
+    ]
+  },
+  {
+    "id": "visit/louDemandCollect",
+    "label": "卢",
+    "registrationId": "louDemandCollect",
+    "identity": "louDemandCollect",
+    "factory": "StoreClientListWanted.CreateLouDemandCollect",
+    "spriteKey": "wanted5",
+    "spriteExpressions": [
+      "\"wanted5\","
+    ]
+  },
+  {
+    "id": "visit/wanted6",
+    "label": "李北文",
+    "registrationId": "wanted6",
+    "identity": "wanted6",
+    "factory": "StoreClientListWanted.CreateWanted6",
+    "spriteKey": "wanted6",
+    "spriteExpressions": [
+      "\"wanted6\""
+    ]
+  },
+  {
+    "id": "visit/wanted6_supply",
+    "label": "李北文",
+    "registrationId": "wanted6_supply",
+    "identity": "wanted6_supply",
+    "factory": "StoreClientListWanted.CreateWanted6Supply",
+    "spriteKey": "wanted6",
+    "spriteExpressions": [
+      "\"wanted6\""
+    ]
+  },
+  {
+    "id": "visit/wanted6_finale",
+    "label": "李北文",
+    "registrationId": "wanted6_finale",
+    "identity": "wanted6_finale",
+    "factory": "StoreClientListWanted.CreateWanted6Finale",
+    "spriteKey": "wanted6",
+    "spriteExpressions": [
+      "\"wanted6\""
+    ]
+  },
+  {
+    "id": "visit/wanted7",
+    "label": "下层区劳工",
+    "registrationId": "wanted7",
+    "identity": "wanted7",
+    "factory": "StoreClientListWanted.CreateWanted7",
+    "spriteKey": "wanted7",
+    "spriteExpressions": [
+      "\"wanted7\""
+    ]
+  },
+  {
+    "id": "visit/wanted8",
+    "label": "约翰·史密斯",
+    "registrationId": "wanted8",
+    "identity": "wanted8",
+    "factory": "StoreClientListWanted.CreateWanted8",
+    "spriteKey": "wanted8",
+    "spriteExpressions": [
+      "\"wanted8\""
+    ]
+  },
+  {
+    "id": "visit/wanted8_return",
+    "label": "约翰·史密斯",
+    "registrationId": "wanted8_return",
+    "identity": "wanted8_return",
+    "factory": "StoreClientListWanted.CreateWanted8Return",
+    "spriteKey": "wanted8",
+    "spriteExpressions": [
+      "\"wanted8\""
+    ]
+  },
+  {
+    "id": "visit/wanted8_weekly",
+    "label": "约翰·史密斯",
+    "registrationId": "wanted8_weekly",
+    "identity": "wanted8_weekly",
+    "factory": "StoreClientListWanted.CreateWanted8Weekly",
+    "spriteKey": "wanted8",
+    "spriteExpressions": [
+      "\"wanted8\""
+    ]
+  },
+  {
+    "id": "visit/wanted8_vandal",
+    "label": "约翰·史密斯",
+    "registrationId": "wanted8_vandal",
+    "identity": "wanted8_vandal",
+    "factory": "StoreClientListWanted.CreateWanted8Vandal",
+    "spriteKey": "wanted8",
+    "spriteExpressions": [
+      "\"wanted8\""
+    ]
+  },
+  {
+    "id": "visit/wanted9",
+    "label": "勒鲁瓦",
+    "registrationId": "wanted9",
+    "identity": "wanted9",
+    "factory": "StoreClientListWanted.CreateWanted9",
+    "spriteKey": "wanted9",
+    "spriteExpressions": [
+      "\"wanted9\""
+    ]
+  },
+  {
+    "id": "visit/eleanorUncle",
+    "label": "埃莉诺的叔叔",
+    "registrationId": "eleanorUncle",
+    "identity": "eleanorUncle",
+    "factory": "StoreClientUniqueList.CreateEleanorUncle",
+    "spriteKey": "maleBM5",
+    "spriteExpressions": [
+      "\"maleBM5\""
+    ]
+  },
+  {
+    "id": "visit/waterCompany",
+    "label": "下层区公民",
+    "registrationId": "waterCompany",
+    "identity": "waterCompany",
+    "factory": "StoreClientListWater.CreateWaterCompany",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/waterSellerScav",
+    "label": "拾荒客",
+    "registrationId": "waterSellerScav",
+    "identity": "waterSellerScav",
+    "factory": "StoreClientListWater.CreateWaterSellScav",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/waterHishonestSellerScav",
+    "label": "拾荒客",
+    "registrationId": "waterHishonestSellerScav",
+    "identity": "waterHishonestSellerScav",
+    "factory": "StoreClientListWater.CreateDishonestWaterSellScav",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/honestBadWaterSeller",
+    "label": "拾荒客",
+    "registrationId": "honestBadWaterSeller",
+    "identity": "honestBadWaterSeller",
+    "factory": "StoreClientListWater.CreateHonestWaterSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/georgio1",
+    "label": "乔治奥",
+    "registrationId": "georgio1",
+    "identity": "georgio1",
+    "factory": "StoreClientUniqueList.CreateGeorgioIntro",
+    "spriteKey": "george",
+    "spriteExpressions": [
+      "\"george\""
+    ]
+  },
+  {
+    "id": "visit/georgio1_1",
+    "label": "乔治奥",
+    "registrationId": "georgio1_1",
+    "identity": "georgio1_1",
+    "factory": "StoreClientUniqueList.CreateGeorgioIntro2",
+    "spriteKey": "george",
+    "spriteExpressions": [
+      "\"george\""
+    ]
+  },
+  {
+    "id": "visit/georgio_backpack",
+    "label": "乔治奥",
+    "registrationId": "georgio_backpack",
+    "identity": "georgio_backpack",
+    "factory": "StoreClientUniqueList.CreateGeorgioBackpack",
+    "spriteKey": "george",
+    "spriteExpressions": [
+      "\"george\""
+    ]
+  },
+  {
+    "id": "visit/georgio_assistance",
+    "label": "乔治奥",
+    "registrationId": "georgio_assistance",
+    "identity": "georgio_assistance",
+    "factory": "StoreClientUniqueList.CreateGeorgioAssistance",
+    "spriteKey": "george",
+    "spriteExpressions": [
+      "\"george\""
+    ]
+  },
+  {
+    "id": "visit/georgio2",
+    "label": "乔治奥",
+    "registrationId": "georgio2",
+    "identity": "georgio2",
+    "factory": "StoreClientUniqueList.CreateGeorgio2",
+    "spriteKey": "george",
+    "spriteExpressions": [
+      "\"george\""
+    ]
+  },
+  {
+    "id": "visit/georgio3",
+    "label": "乔治奥",
+    "registrationId": "georgio3",
+    "identity": "georgio3",
+    "factory": "StoreClientUniqueList.CreateGeorgio3",
+    "spriteKey": "george",
+    "spriteExpressions": [
+      "\"george\""
+    ]
+  },
+  {
+    "id": "visit/georgio_luck_intro",
+    "label": "乔治奥",
+    "registrationId": "georgio_luck_intro",
+    "identity": "georgio_luck_intro",
+    "factory": "StoreClientUniqueList.CreateGeorgioLuckIntro",
+    "spriteKey": "george",
+    "spriteExpressions": [
+      "\"george\""
+    ]
+  },
+  {
+    "id": "visit/georgio_luck_sale",
+    "label": "乔治奥",
+    "registrationId": "georgio_luck_sale",
+    "identity": "georgio_luck_sale",
+    "factory": "StoreClientUniqueList.CreateGeorgioLuckSale",
+    "spriteKey": "george",
+    "spriteExpressions": [
+      "\"george\""
+    ]
+  },
+  {
+    "id": "visit/georgio4",
+    "label": "乔治奥",
+    "registrationId": "georgio4",
+    "identity": "georgio4",
+    "factory": "StoreClientUniqueList.CreateGeorgio4",
+    "spriteKey": "george",
+    "spriteExpressions": [
+      "\"george\""
+    ]
+  },
+  {
+    "id": "visit/georgioLoan",
+    "label": "乔治奥",
+    "registrationId": "georgioLoan",
+    "identity": "georgioLoan",
+    "factory": "StoreClientUniqueList.CreateGeorgioLoan",
+    "spriteKey": "george",
+    "spriteExpressions": [
+      "\"george\""
+    ]
+  },
+  {
+    "id": "visit/georgioLoanPayback",
+    "label": "乔治奥",
+    "registrationId": "georgioLoanPayback",
+    "identity": "georgioLoanPayback",
+    "factory": "StoreClientUniqueList.CreateGeorgioLoanPayback",
+    "spriteKey": "george",
+    "spriteExpressions": [
+      "\"george\""
+    ]
+  },
+  {
+    "id": "visit/georgio_nuclear_waste",
+    "label": "乔治奥",
+    "registrationId": "georgio_nuclear_waste",
+    "identity": "georgio_nuclear_waste",
+    "factory": "StoreClientUniqueList.CreateGeorgioNuclearWaste",
+    "spriteKey": "george",
+    "spriteExpressions": [
+      "\"george\""
+    ]
+  },
+  {
+    "id": "visit/foodieTourist",
+    "label": "觅食游客",
+    "registrationId": "foodieTourist",
+    "identity": "foodieTourist",
+    "factory": "StoreClientUniqueList.CreateFoodieTourist",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetFoodieSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/foodieTouristReturning",
+    "label": "觅食游客",
+    "registrationId": "foodieTouristReturning",
+    "identity": "foodieTouristReturning",
+    "factory": "StoreClientUniqueList.CreateFoodieTouristReturning",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetFoodieSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/caseEnjoyer",
+    "label": "caseEnjoyer",
+    "registrationId": "caseEnjoyer",
+    "identity": "caseEnjoyer",
+    "factory": "StoreClientUniqueList.CreateCaseEnjoyer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetCaseEnjoyerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/caseEnjoyerReturning",
+    "label": "caseEnjoyerReturning",
+    "registrationId": "caseEnjoyerReturning",
+    "identity": "caseEnjoyerReturning",
+    "factory": "StoreClientUniqueList.CreateCaseEnjoyerReturning",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetCaseEnjoyerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/evidenceSeller",
+    "label": "小偷",
+    "registrationId": "evidenceSeller",
+    "identity": "evidenceSeller",
+    "factory": "StoreClientUniqueList.UniqueEvidenceSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/landlord_wholesale",
+    "label": "房东",
+    "registrationId": "landlord_wholesale",
+    "identity": "landlord_wholesale",
+    "factory": "StoreClientUniqueList.LandlordWholesale",
+    "spriteKey": "landlord",
+    "spriteExpressions": [
+      "\"landlord\""
+    ]
+  },
+  {
+    "id": "visit/officerLunVisit",
+    "label": "伦警官",
+    "registrationId": "officerLunVisit",
+    "identity": "officerLunVisit",
+    "factory": "StoreClientUniqueList.CreateOfficerLunVisit",
+    "spriteKey": "officer_lun",
+    "spriteExpressions": [
+      "\"officer_lun\""
+    ]
+  },
+  {
+    "id": "visit/officerLunShot",
+    "label": "伦警官",
+    "registrationId": "officerLunShot",
+    "identity": "officerLunShot",
+    "factory": "StoreClientUniqueList.CreateOfficerLunShot",
+    "spriteKey": "officer_lun",
+    "spriteExpressions": [
+      "\"officer_lun\""
+    ]
+  },
+  {
+    "id": "visit/lunCriminel",
+    "label": "下层区公民",
+    "registrationId": "lunCriminel",
+    "identity": "lunCriminel",
+    "factory": "StoreClientUniqueList.CreateLunCriminel",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomBMMaleSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/officerLunBackOnDuty",
+    "label": "伦警官",
+    "registrationId": "officerLunBackOnDuty",
+    "identity": "officerLunBackOnDuty",
+    "factory": "StoreClientUniqueList.CreateOfficerLunBackOnDuty",
+    "spriteKey": "officer_lun",
+    "spriteExpressions": [
+      "\"officer_lun\""
+    ]
+  },
+  {
+    "id": "visit/officerLunSurplus",
+    "label": "伦警官",
+    "registrationId": "officerLunSurplus",
+    "identity": "officerLunSurplus",
+    "factory": "StoreClientUniqueList.CreateOfficerLunSurplus",
+    "spriteKey": "officer_lun",
+    "spriteExpressions": [
+      "\"officer_lun\""
+    ]
+  },
+  {
+    "id": "visit/officerLunInspection",
+    "label": "伦警官",
+    "registrationId": "officerLunInspection",
+    "identity": "officerLunInspection",
+    "factory": "StoreClientUniqueList.CreateOfficerLunInspection",
+    "spriteKey": "officer_lun",
+    "spriteExpressions": [
+      "\"officer_lun\""
+    ]
+  },
+  {
+    "id": "visit/cartelIntro",
+    "label": "卡特尔接头人",
+    "registrationId": "cartelIntro",
+    "identity": "cartelIntro",
+    "factory": "StoreClientListCartel.CreateCartelIntro",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetCartelHandlerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/cartelSec",
+    "label": "治安部警官",
+    "registrationId": "cartelSec",
+    "identity": "cartelSec",
+    "factory": "StoreClientListCartel.CreateCartelSec",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomSecSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/cartelSecSnitched",
+    "label": "卡特尔接头人",
+    "registrationId": "cartelSecSnitched",
+    "identity": "cartelSecSnitched",
+    "factory": "StoreClientListCartel.CreateCartelSecSnitched",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetCartelHandlerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/CreateCartelIntro",
+    "label": "卡特尔接头人",
+    "registrationId": "CreateCartelIntro",
+    "identity": "cartelHandlerCheckin",
+    "factory": "StoreClientListCartel.CreateCartelHandlerCheckin",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetCartelHandlerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/cartelHandlerWeekly",
+    "label": "卡特尔接头人",
+    "registrationId": "cartelHandlerWeekly",
+    "identity": "cartelHandlerWeekly",
+    "factory": "StoreClientListCartel.CreateCartelHandlerWeekly",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetCartelHandlerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/cartelWoundedSoldier",
+    "label": "卡特尔士兵",
+    "registrationId": "cartelWoundedSoldier",
+    "identity": "cartelWoundedSoldier",
+    "factory": "StoreClientListCartel.CreateCartelWoundedSoldier",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/shadyFarmer",
+    "label": "可疑的农场主",
+    "registrationId": "shadyFarmer",
+    "identity": "shadyFarmer",
+    "factory": "StoreClientListCartel.CreateShadyFarmer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomFarmerSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/street_dealer",
+    "label": "商人",
+    "registrationId": "street_dealer",
+    "identity": "street_dealer",
+    "factory": "StoreClientListCartel.CreateDealer",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/food_surplus_client",
+    "label": "下层区商人",
+    "registrationId": "food_surplus_client",
+    "identity": "food_surplus_client",
+    "factory": "StoreClientListSurplus.CreateFoodSurplusClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/material_surplus_client",
+    "label": "下层区商人",
+    "registrationId": "material_surplus_client",
+    "identity": "material_surplus_client",
+    "factory": "StoreClientListSurplus.CreateMaterialSurplusClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/medical_surplus_client",
+    "label": "下层区摊贩",
+    "registrationId": "medical_surplus_client",
+    "identity": "medical_surplus_client",
+    "factory": "StoreClientListSurplus.CreateMedicalSurplusClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/substance_surplus_client",
+    "label": "狡猾的商人",
+    "registrationId": "substance_surplus_client",
+    "identity": "substance_surplus_client",
+    "factory": "StoreClientListSurplus.CreateSubstanceSurplusClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/weapon_armor_surplus_client",
+    "label": "下层区武器商人",
+    "registrationId": "weapon_armor_surplus_client",
+    "identity": "weapon_armor_surplus_client",
+    "factory": "StoreClientListSurplus.CreateWeaponArmorSurplusClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/food_shortage_client",
+    "label": "下层区公民",
+    "registrationId": "food_shortage_client",
+    "identity": "food_shortage_client",
+    "factory": "StoreClientListShortage.CreateFoodShortageClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/material_shortage_client",
+    "label": "废料商人",
+    "registrationId": "material_shortage_client",
+    "identity": "material_shortage_client",
+    "factory": "StoreClientListShortage.CreateMaterialShortageClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/medical_shortage_client",
+    "label": "忧心忡忡的居民",
+    "registrationId": "medical_shortage_client",
+    "identity": "medical_shortage_client",
+    "factory": "StoreClientListShortage.CreateMedicalShortageClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/substance_shortage_client",
+    "label": "可疑的瘾君子",
+    "registrationId": "substance_shortage_client",
+    "identity": "substance_shortage_client",
+    "factory": "StoreClientListShortage.CreateSubstanceShortageClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/weapon_armor_shortage_client",
+    "label": "紧张的当地人",
+    "registrationId": "weapon_armor_shortage_client",
+    "identity": "weapon_armor_shortage_client",
+    "factory": "StoreClientListShortage.CreateWeaponArmorShortageClient",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomLowerLevelSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavGenericFoodSeller",
+    "label": "拾荒客",
+    "registrationId": "scavGenericFoodSeller",
+    "identity": "scavGenericFoodSeller",
+    "factory": "StoreClientListSupplier.CreateScavFoodSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavGenericHouseholdSeller",
+    "label": "拾荒客",
+    "registrationId": "scavGenericHouseholdSeller",
+    "identity": "scavGenericHouseholdSeller",
+    "factory": "StoreClientListSupplier.CreateScavHouseholdSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavGenericMaterialSeller",
+    "label": "拾荒客",
+    "registrationId": "scavGenericMaterialSeller",
+    "identity": "scavGenericMaterialSeller",
+    "factory": "StoreClientListSupplier.CreateScavMaterialSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/scavGenericMedSeller",
+    "label": "拾荒客",
+    "registrationId": "scavGenericMedSeller",
+    "identity": "scavGenericMedSeller",
+    "factory": "StoreClientListSupplier.CreateScavMedSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomScavSpriteName()"
+    ]
+  },
+  {
+    "id": "visit/thiefGenericFoodSeller",
+    "label": "小偷",
+    "registrationId": "thiefGenericFoodSeller",
+    "identity": "thiefGenericFoodSeller",
+    "factory": "StoreClientListSupplier.CreateThiefFoodSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/thiefGenericHouseholdSeller",
+    "label": "小偷",
+    "registrationId": "thiefGenericHouseholdSeller",
+    "identity": "thiefGenericHouseholdSeller",
+    "factory": "StoreClientListSupplier.CreateThiefHouseholdSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/thiefGenericMaterialSeller",
+    "label": "小偷",
+    "registrationId": "thiefGenericMaterialSeller",
+    "identity": "thiefGenericMaterialSeller",
+    "factory": "StoreClientListSupplier.CreateThiefMaterialSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  },
+  {
+    "id": "visit/thiefGenericMedSeller",
+    "label": "小偷",
+    "registrationId": "thiefGenericMedSeller",
+    "identity": "thiefGenericMedSeller",
+    "factory": "StoreClientListSupplier.CreateThiefMedSeller",
+    "spriteKey": null,
+    "spriteExpressions": [
+      "SpriteDict.GetRandomShadySpriteName()"
+    ]
+  }
+]

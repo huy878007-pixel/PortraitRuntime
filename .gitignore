@@ -3,6 +3,11 @@
 **/__pycache__/
 dist/
 artifacts/
-packs/core/portraits/
-packs/core/special/
-catalogs/
+
+# Generated compatibility tables. The three files the runtime and the build need are committed so a
+# fresh clone can build; everything else here comes from a local decompilation of the game and stays
+# out of the repository.
+catalogs/*
+!catalogs/dialogue_keys.json
+!catalogs/debug_visits.json
+!catalogs/special_targets.json

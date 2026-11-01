@@ -3,7 +3,7 @@
   "id": "demo",
   "name": "扩展示范：失联信号",
   "author": "PortraitRuntime",
-  "license": "Example code; portrait retains core artwork license",
+  "license": "Example code AGPL-3.0-only; portrait reuses core artwork under CC-BY-NC-4.0",
   "priority": 200,
   "dependencies": [
     "core"
