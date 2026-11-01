@@ -1,0 +1,159 @@
+{
+  "format": "portrait-pack/1",
+  "id": "demo",
+  "name": "扩展示范：失联信号",
+  "author": "PortraitRuntime",
+  "license": "Example code; portrait retains core artwork license",
+  "priority": 200,
+  "dependencies": [
+    "core"
+  ],
+  "enabled": true,
+  "characters": {
+    "courier": {
+      "identifiers": [
+        "demo.courier",
+        "demo.return"
+      ],
+      "base": "courier.png"
+    }
+  },
+  "items": {
+    "demo.signal": {
+      "create": true,
+      "name": "加密信号片",
+      "description": "内容核心库示范物品，可保存、交易。",
+      "icon": "signal.png",
+      "grid": [
+        1,
+        1
+      ],
+      "value": 50,
+      "tags": [
+        "HOUSEHOLD_GOOD"
+      ]
+    }
+  },
+  "actors": {
+    "demo.courier": {
+      "name": "信号信使（扩展示范）",
+      "character": "courier",
+      "story": "first",
+      "vanillaSprite": "officer_lun",
+      "when": {
+        "minDay": 2
+      }
+    },
+    "demo.return": {
+      "name": "信号信使（回访）",
+      "character": "courier",
+      "story": "return",
+      "vanillaSprite": "officer_lun",
+      "when": {
+        "minDay": 3,
+        "equals": {
+          "accepted": "yes"
+        }
+      }
+    },
+    "demo.trader": {
+      "name": "信号片交易员（扩展示范）",
+      "character": "courier",
+      "story": "trade",
+      "vanillaSprite": "officer_lun",
+      "intent": "SELLNBUY",
+      "sellItems": [
+        "demo.signal"
+      ],
+      "buyItems": [
+        "demo.signal"
+      ],
+      "cash": 500,
+      "when": {
+        "minDay": 4,
+        "equals": {
+          "accepted": "yes"
+        }
+      }
+    }
+  },
+  "stories": {
+    "first": {
+      "start": "start",
+      "nodes": {
+        "start": {
+          "text": "我带来一枚加密信号片。你愿意接收它吗？",
+          "choices": [
+            {
+              "text": "接收信号片",
+              "next": "accept"
+            },
+            {
+              "text": "拒绝",
+              "next": "decline"
+            }
+          ]
+        },
+        "accept": {
+          "text": "请保管好它。我会再来。你可以先保存并退出，再读档验证。",
+          "end": true,
+          "actions": [
+            {
+              "op": "giveItem",
+              "key": "demo.signal"
+            },
+            {
+              "op": "set",
+              "key": "accepted",
+              "value": "yes"
+            }
+          ]
+        },
+        "decline": {
+          "text": "我明白了。这条剧情会记住你的选择。",
+          "end": true,
+          "actions": [
+            {
+              "op": "set",
+              "key": "accepted",
+              "value": "no"
+            }
+          ]
+        }
+      }
+    },
+    "return": {
+      "start": "start",
+      "nodes": {
+        "start": {
+          "text": "我们又见面了。上次的选择已经保存。",
+          "next": "reward"
+        },
+        "reward": {
+          "text": "这是解码报酬：20 信用点。之后交易员也会来。",
+          "end": true,
+          "actions": [
+            {
+              "op": "cash",
+              "amount": 20
+            },
+            {
+              "op": "set",
+              "key": "finished",
+              "value": "yes"
+            }
+          ]
+        }
+      }
+    },
+    "trade": {
+      "start": "start",
+      "nodes": {
+        "start": {
+          "text": "我出售也收购加密信号片。请通过原生交易界面完成买卖。",
+          "end": true
+        }
+      }
+    }
+  }
+}

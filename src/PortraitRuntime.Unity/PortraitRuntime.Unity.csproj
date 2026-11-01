@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>netstandard2.1</TargetFramework><AssemblyName>PortraitRuntime.Unity</AssemblyName></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../PortraitRuntime.Core/PortraitRuntime.Core.csproj" />
+    <Reference Include="$(GameManaged)/Assembly-CSharp.dll"><Private>false</Private></Reference>
+    <Reference Include="$(GameManaged)/Assembly-CSharp-firstpass.dll"><Private>false</Private></Reference>
+    <Reference Include="$(GameManaged)/0Harmony.dll"><Private>false</Private></Reference>
+    <Reference Include="$(GameManaged)/Unity*.dll"><Private>false</Private></Reference>
+    <Reference Include="$(GameManaged)/Newtonsoft.Json.dll"><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

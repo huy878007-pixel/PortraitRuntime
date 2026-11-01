@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType><AssemblyName>validate_pack</AssemblyName></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../PortraitRuntime.Core/PortraitRuntime.Core.csproj" /></ItemGroup>
+  <ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>$(GameManaged)/Newtonsoft.Json.dll</HintPath></Reference></ItemGroup>
+</Project>

@@ -1,0 +1,36 @@
+{
+  "format": "portrait-pack/1",
+  "id": "icon-examples",
+  "name": "五件物品换图示范（绿色测试边框）",
+  "author": "PortraitRuntime / original game icon reference",
+  "license": "Local testing only; original game assets retain their rights",
+  "priority": 900,
+  "enabled": false,
+  "items": {
+    "100ml_cylinder": {
+      "icon": "100ml_cylinder.png",
+      "atlas": "Items/water_container3",
+      "sprite": "100ml"
+    },
+    "1ml_dropper": {
+      "icon": "1ml_dropper.png",
+      "atlas": "Items/water_container3",
+      "sprite": "1ml"
+    },
+    "25ml_cylinder": {
+      "icon": "25ml_cylinder.png",
+      "atlas": "Items/water_container3",
+      "sprite": "25ml"
+    },
+    "50ml_cylinder": {
+      "icon": "50ml_cylinder.png",
+      "atlas": "Items/water_container3",
+      "sprite": "50ml"
+    },
+    "5ml_dropper": {
+      "icon": "5ml_dropper.png",
+      "atlas": "Items/water_container3",
+      "sprite": "5ml"
+    }
+  }
+}
