@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import time
@@ -14,6 +15,8 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 CORE_VERSION = '0.3.7'
 BEAUTY_VERSION = '2.1.7'
+# The beauty content lives in its own repository; clone it here (gitignored) to package both Mods.
+BEAUTY_ROOT = Path(os.environ.get('PORTRAIT_BEAUTY_DIR', ROOT / 'beauty'))
 
 
 def sha(path):
@@ -50,9 +53,11 @@ def promote(source, destination):
 
 
 def main():
+    if not (BEAUTY_ROOT / 'packs/core/pack.json').is_file():
+        raise SystemExit('Beauty content not found. Clone https://github.com/huy878007-pixel/probably-waifu into ' + str(BEAUTY_ROOT))
     cli = ROOT / 'src/PortraitRuntime.Cli/bin/Release/net10.0/validate_pack.dll'
     reports = []
-    for folder in sorted((ROOT / 'packs').iterdir()):
+    for folder in sorted(list((ROOT / 'packs').iterdir()) + list((BEAUTY_ROOT / 'packs').iterdir())):
         if not (folder / 'pack.json').is_file():
             continue
         result = subprocess.run(['dotnet', str(cli), 'validate', str(folder), str(ROOT / 'catalogs/dialogue_keys.json')], capture_output=True, text=True, encoding='utf-8', check=False)
@@ -77,12 +82,15 @@ def main():
     manifest(runtime, 'player.portraitruntime', '深空内容核心库 · F3调试台', CORE_VERSION,
              '独立内容运行时，无人物美术。F3调试台（可改F4），当天人物巡览、剧情配图巡检、详细日志、F11诊断。显示设置由人物美化内容包提供。',
              ['PortraitRuntime.Core.dll', 'PortraitRuntime.Unity.dll'], capabilities=['files', 'reflection-external'])
-    bridge = ROOT / 'src/LaunchGiftPortraits.Content/bin/Release/netstandard2.1/LaunchGiftPortraits.Content.dll'
+    bridge = BEAUTY_ROOT / 'src/LaunchGiftPortraits.Content/bin/Release/netstandard2.1/LaunchGiftPortraits.Content.dll'
     shutil.copy2(bridge, beauty / bridge.name)
     (beauty / 'portrait-content.marker').write_text('portrait-content/1\n', encoding='utf-8')
     # Scene knowledge for the special artwork belongs to the beauty Mod: the core performs no replacement.
-    shutil.copy2(ROOT / 'catalogs/special_targets.json', beauty / 'special_targets.json')
-    shutil.copytree(ROOT / 'packs', beauty / 'packs')
+    shutil.copy2(BEAUTY_ROOT / 'special_targets.json', beauty / 'special_targets.json')
+    shutil.copytree(BEAUTY_ROOT / 'packs', beauty / 'packs')
+    for folder in (ROOT / 'packs').iterdir():
+        if (folder / 'pack.json').is_file():
+            shutil.copytree(folder, beauty / 'packs' / folder.name)
     for sample in ['demo', 'icon-examples']:
         path = beauty / 'packs' / sample / 'pack.json'
         data = json.loads(path.read_text(encoding='utf-8'))

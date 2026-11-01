@@ -6,15 +6,26 @@ import base64
 import html
 import io
 import json
+import os
 from collections import defaultdict
 from pathlib import Path
 
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
+# Character artwork lives in the beauty repository, which is checked out next to this one.
+BEAUTY = Path(os.environ.get('PORTRAIT_BEAUTY_DIR', ROOT / 'beauty'))
 AUDIT = ROOT / 'artifacts/offline-audit.json'
 OUTPUT = ROOT / 'artifacts/offline-audit.html'
 THUMB_WIDTH = 220
+
+
+def pack_file(pack: str, path: str) -> Path:
+    for base in (BEAUTY / 'packs', ROOT / 'packs'):
+        candidate = base / pack / path
+        if candidate.is_file():
+            return candidate
+    return BEAUTY / 'packs' / pack / path
 
 
 def thumb(path: Path) -> str:
@@ -40,11 +51,10 @@ def main():
     # one thumbnail per distinct image, shared by every row that shows it
     images: dict[str, str] = {}
     for row in mapped:
-        pack = next(p for p in report['packs'])
         key = row['pack'] + '/' + row['path']
         if key in images:
             continue
-        candidate = ROOT / 'packs' / pack / row['path']
+        candidate = pack_file(row['pack'], row['path'])
         images[key] = thumb(candidate) if candidate.is_file() else ''
 
     def esc(value) -> str:

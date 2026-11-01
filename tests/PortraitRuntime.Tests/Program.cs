@@ -26,7 +26,16 @@ Test("state action survives host serialization", () => { var h = new TestHost();
 Test("same node action does not duplicate item reward", () => { var h = new TestHost(); var effects = new[] { new Effect { Op = "giveItem", Key = "token", Amount = 1 } }; StoryEngine.Apply(new Pack { Id = "core" }, effects, "a/reward", h); StoryEngine.Apply(new Pack { Id = "core" }, effects, "a/reward", h); Check(h.CountItem("token") == 1); });
 Test("different packs do not share variables", () => { var h = new TestHost(); StoryEngine.Apply(new Pack { Id = "one" }, new[] { new Effect { Key = "x", Value = "a" } }, "x", h); Check(h.Get("two/x") == ""); });
 string repo = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
-Pack ReadPack(string name) => PackReader.Read(Path.Combine(repo, "packs", name));
+// Character content lives in the beauty repository, checked out next to this one as beauty/.
+string beauty = Environment.GetEnvironmentVariable("PORTRAIT_BEAUTY_DIR") ?? Path.Combine(repo, "beauty");
+Pack ReadPack(string name)
+{
+    var local = Path.Combine(repo, "packs", name);
+    var shared = Path.Combine(beauty, "packs", name);
+    var root = Directory.Exists(local) ? local : shared;
+    if (!Directory.Exists(root)) throw new DirectoryNotFoundException("Pack '" + name + "' not found; clone the beauty repository into " + beauty);
+    return PackReader.Read(root);
+}
 string Fixture(Pack pack)
 {
     foreach (var story in pack.Stories.Values) foreach (var node in story.Nodes.Values)

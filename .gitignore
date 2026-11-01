@@ -4,10 +4,12 @@
 dist/
 artifacts/
 
-# Generated compatibility tables. The three files the runtime and the build need are committed so a
-# fresh clone can build; everything else here comes from a local decompilation of the game and stays
-# out of the repository.
+# The beauty content (artwork, pack, presentation Mod) lives in its own repository and is checked
+# out here for packaging: https://github.com/huy878007-pixel/probably-waifu
+beauty/
+
+# Generated compatibility tables. The two files the runtime needs are committed so a fresh clone can
+# build; everything else here comes from a local decompilation of the game and stays out.
 catalogs/*
 !catalogs/dialogue_keys.json
 !catalogs/debug_visits.json
-!catalogs/special_targets.json

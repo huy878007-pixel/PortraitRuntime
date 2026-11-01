@@ -3,12 +3,15 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
 import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts'
+# The beauty content lives in its own repository; clone it here (gitignored) for the full pipeline.
+BEAUTY = Path(os.environ.get('PORTRAIT_BEAUTY_DIR', ROOT / 'beauty'))
 
 
 def main():
@@ -31,7 +34,9 @@ def main():
 
     run('runtime-build', ['dotnet', 'build', 'src/PortraitRuntime.Unity', '-c', 'Release', '--nologo'])
     run('cli-build', ['dotnet', 'build', 'src/PortraitRuntime.Cli', '-c', 'Release', '--nologo'])
-    run('beauty-bridge-build', ['dotnet', 'build', 'src/LaunchGiftPortraits.Content', '-c', 'Release', '--nologo'])
+    if not (BEAUTY / 'packs/core/pack.json').is_file():
+        raise SystemExit('Beauty content not found. Clone https://github.com/huy878007-pixel/probably-waifu into ' + str(BEAUTY))
+    run('beauty-bridge-build', ['dotnet', 'build', str(BEAUTY / 'src/LaunchGiftPortraits.Content'), '-c', 'Release', '--nologo'])
     run('debug-catalog', ['python', 'tools/build_debug_catalog.py'])
     run('core-tests', ['dotnet', 'run', '--project', 'tests/PortraitRuntime.Tests', '-c', 'Release'])
     run('python-lint', ['python', '-m', 'ruff', 'check', '--isolated', '--select', 'E,F', '--ignore', 'E501', 'tools', 'tests/workbench_test.py'])
@@ -52,7 +57,7 @@ def main():
     run('simulate-refusal', cli + ['simulate', 'packs/demo', 'demo.courier', str(refusal), '2', '1'])
     run('simulate-refused-return-rejected', cli + ['simulate', 'packs/demo', 'demo.return', str(refusal), '3', '0'], expected=1)
     run('package', ['python', 'tools/build_pack.py'])
-    run('offline-audit', cli + ['audit', 'packs', 'catalogs', str(ART / 'offline-audit.json')])
+    run('offline-audit', cli + ['audit', 'catalogs', str(ART / 'offline-audit.json'), 'packs', str(BEAUTY / 'packs')])
     run('offline-audit-sheet', ['python', 'tools/build_audit_sheet.py'])
     run('native-contracts', ['dotnet', 'run', '--project', 'tests/NativeContracts', '-c', 'Release', '--', 'dist/player.portraitruntime'])
     run('publish-descriptor', ['python', 'tools/publish.py'])

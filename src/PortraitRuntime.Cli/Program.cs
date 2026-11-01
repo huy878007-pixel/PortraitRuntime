@@ -4,7 +4,7 @@ using PortraitRuntime.Core;
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 try
 {
-    if (args.Length < 2) { Console.WriteLine("validate_pack validate <pack目录> [台词key表]\nvalidate_pack catalog <packs目录>\nvalidate_pack audit <packs目录> <catalogs目录> <输出JSON>\nvalidate_pack simulate <pack目录> <人物ID> <状态JSON路径> [天数] [选项序号]"); return 2; }
+    if (args.Length < 2) { Console.WriteLine("validate_pack validate <pack目录> [台词key表]\nvalidate_pack catalog <packs目录>\nvalidate_pack audit <catalogs目录> <输出JSON> <packs目录>...\nvalidate_pack simulate <pack目录> <人物ID> <状态JSON路径> [天数] [选项序号]"); return 2; }
     if (args[0] == "validate")
     {
         var keys = args.Length > 2 ? JsonConvert.DeserializeObject<HashSet<string>>(File.ReadAllText(args[2])) : null;
@@ -21,9 +21,10 @@ try
     else if (args[0] == "audit" && args.Length >= 4)
     {
         // Answers "what will the player actually see for each visitor" without launching the game.
+        // Several pack roots are accepted because the runtime and the beauty content live apart.
         var errors = new List<string>();
-        var catalog = PackReader.Load(args[1], errors.Add);
-        var visits = JsonConvert.DeserializeObject<List<DebugCase>>(File.ReadAllText(Path.Combine(args[2], "debug_visits.json"))) ?? new();
+        var catalog = PackReader.LoadSources(args.Skip(3).ToArray(), errors.Add);
+        var visits = JsonConvert.DeserializeObject<List<DebugCase>>(File.ReadAllText(Path.Combine(args[1], "debug_visits.json"))) ?? new();
         var rows = visits.Select(c =>
         {
             var r = SpriteLookup.Resolve(catalog, c.Identity, c.Factory, c.SpriteKey, null);
@@ -70,7 +71,7 @@ try
             },
             visits = rows, characters, storyProblems = stories,
         };
-        var target = Path.GetFullPath(args[3]);
+        var target = Path.GetFullPath(args[2]);
         Directory.CreateDirectory(Path.GetDirectoryName(target)!);
         File.WriteAllText(target, JsonConvert.SerializeObject(report, Formatting.Indented));
         Console.WriteLine(JsonConvert.SerializeObject(report.summary, Formatting.Indented));
