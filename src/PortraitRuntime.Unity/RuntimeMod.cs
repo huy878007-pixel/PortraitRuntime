@@ -25,6 +25,10 @@ public sealed class RuntimeMod : IMod
     Harmony harmony;
     RuntimePump pump;
     ModManifest manifest;
+    ISet<string> dialogueKeys;
+    public readonly DebugConsole Debugger = new();
+    public TraceLog Trace { get; private set; }
+    static readonly Dictionary<string, (DateTime Last, int Count)> repeatedErrors = new();
     readonly Dictionary<string, Func<StoreClient>> replacedFactories = new();
     readonly Dictionary<string, Func<StoreClient>> actorFactories = new();
     readonly Dictionary<ModItemDirectory, Dictionary<string, Func<GameItem>>> itemFactories = new();
@@ -35,26 +39,42 @@ public sealed class RuntimeMod : IMod
     public sealed class FactoryTag { public string Factory; }
     public sealed class DialogueTag { public string Key; public Pack Pack; public string Portrait; }
     public sealed class TextTag { public readonly HashSet<string> Keys = new(StringComparer.Ordinal); }
-    public static void Log(string text) => Debug.Log("[PortraitRuntime] " + text);
+    public static void Event(string level, string name, object data = null)
+        => Current?.Trace?.Write(level, name, new { frame = Time.frameCount, day = StoreStation.Instance?.dayCounter, data });
+    public static void Log(string text) { Debug.Log("[PortraitRuntime] " + text); Event("info", "runtime.message", new { message = text }); }
     public static void Guard(string scope, Action action)
     {
-        try { action(); } catch (Exception e) { Debug.LogError("[PortraitRuntime] " + scope + ": " + e); }
+        try { action(); }
+        catch (Exception e)
+        {
+            string key = scope + "/" + e.GetType().FullName + "/" + e.Message;
+            repeatedErrors.TryGetValue(key, out var prior);
+            if ((DateTime.UtcNow - prior.Last).TotalSeconds < 5) { repeatedErrors[key] = (prior.Last, prior.Count + 1); return; }
+            Event("error", "runtime.exception", new { scope, exception = e.ToString(), suppressedDuplicates = prior.Count });
+            Debug.LogError("[PortraitRuntime] " + scope + ": " + e);
+            if (repeatedErrors.Count > 256) repeatedErrors.Clear();
+            repeatedErrors[key] = (DateTime.UtcNow, 0);
+        }
     }
     public void Init(ModManifest manifest)
     {
         this.manifest = manifest;
         Root = Path.GetDirectoryName(typeof(RuntimeMod).Assembly.Location);
         Current = this;
+        Trace?.Dispose(); Trace = new TraceLog(Path.Combine(Application.persistentDataPath, "PortraitRuntime", "logs"));
+        if (Trace.Failure != null) Debug.LogWarning("[PortraitRuntime] File logging unavailable: " + Trace.Failure);
+        Event("info", "runtime.init", new { runtime = "0.2.0", Root, manifest.ID });
         using var sha = SHA256.Create();
         using var stream = File.OpenRead(typeof(StoreClient).Assembly.Location);
         var hash = BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
         if (hash != SupportedHash) { Log("Unsupported game assembly " + hash + "; runtime disabled"); return; }
-        if (ModLoader.EnabledMods.Contains("player.launchgiftportraits") || ModLoader.Mods.Any(x => x.Manifest?.ID == "player.launchgiftportraits" && x.IsEnabled))
+        if (HasLegacyConflict())
         { Log("Legacy portrait mod enabled; disable it before enabling PortraitRuntime. No hooks installed."); return; }
         Settings.Load(Path.Combine(Root, "ui.json"));
+        Trace.Detailed = Settings.DetailedLogging;
         var keysPath = Path.Combine(Root, "catalogs", "dialogue_keys.json");
-        var keys = File.Exists(keysPath) ? JsonConvert.DeserializeObject<HashSet<string>>(File.ReadAllText(keysPath)) : null;
-        Catalog = PackReader.Load(Path.Combine(Root, "packs"), Log, keys);
+        dialogueKeys = File.Exists(keysPath) ? JsonConvert.DeserializeObject<HashSet<string>>(File.ReadAllText(keysPath)) : null;
+        Catalog = ReadCatalog();
         Assets.Budget = Settings.CacheMiB * 1024L * 1024;
         harmony = new Harmony(ModId + ".runtime");
         Hooks.Install(harmony);
@@ -66,6 +86,8 @@ public sealed class RuntimeMod : IMod
         if (!Ready && manifest != null) Init(manifest);
         if (!Ready || Enabled) return;
         Enabled = true;
+        ContentSources.Changed += ContentChanged;
+        StoryEngine.Diagnostic += StoryDiagnostic;
         var go = new GameObject("PortraitRuntime.Lifecycle");
         UObj.DontDestroyOnLoad(go);
         pump = go.AddComponent<RuntimePump>();
@@ -78,11 +100,14 @@ public sealed class RuntimeMod : IMod
         SpecialDisplay.Apply(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
         RegisterActors();
         foreach (var directory in UObj.FindObjectsOfType<ModItemDirectory>()) RegisterItems(directory);
-        Log("Enabled; F10 settings, F11 diagnostics, F12 extension demonstration (explicit key press only)");
+        Log("Enabled; F7 debug console, F10 display settings, F11 diagnostics");
     }
     public void OnDisable()
     {
+        Debugger.CancelImmediately();
         Enabled = false;
+        ContentSources.Changed -= ContentChanged;
+        StoryEngine.Diagnostic -= StoryDiagnostic;
         ModHook.OnModItemDirectoryInit -= RegisterItems;
         ModHook.OnGenerateCustomerNormal -= Generate;
         ModHook.OnGameLoadedNormal -= Loaded;
@@ -90,6 +115,21 @@ public sealed class RuntimeMod : IMod
         ModHook.OnNewGameStarted -= NewGame;
         UnityEngine.SceneManagement.SceneManager.sceneLoaded -= SceneLoaded;
         SpecialDisplay.Restore();
+        RemoveOwnedFactories();
+        Portrait.Restore();
+        Settings.Restore();
+        harmony?.UnpatchAll(harmony.Id);
+        Assets.RestoreItemOwners();
+        if (pump != null) UObj.Destroy(pump.gameObject);
+        // Loaded game objects may still reference cached sprites; only release unbound assets.
+        Assets.Trim(true);
+        Event("info", "runtime.disabled", new { droppedLogs = Trace?.Dropped, logFailure = Trace?.Failure });
+        Trace?.Dispose();
+        Ready = false;
+        Current = null;
+    }
+    void RemoveOwnedFactories()
+    {
         foreach (var pair in replacedFactories)
             if (StoreClientListDict.storeClientDict.TryGetValue(pair.Key, out var current) && actorFactories.TryGetValue(pair.Key, out var owned) && current == owned)
             { if (pair.Value == null) StoreClientListDict.storeClientDict.Remove(pair.Key); else StoreClientListDict.storeClientDict[pair.Key] = pair.Value; }
@@ -99,20 +139,35 @@ public sealed class RuntimeMod : IMod
             if (dir.Key != null) foreach (var factory in dir.Value)
                 if (dir.Key.factoryDictionary.TryGetValue(factory.Key, out var current) && current == factory.Value) dir.Key.Remove(factory.Key);
         itemFactories.Clear();
-        Portrait.Restore();
-        Settings.Restore();
-        harmony?.UnpatchAll(harmony.Id);
-        Assets.RestoreItemOwners();
-        if (pump != null) UObj.Destroy(pump.gameObject);
-        // Loaded game objects may still reference cached sprites; only release unbound assets.
-        Assets.Trim(true);
-        Ready = false;
-        Current = null;
     }
+    public static bool HasLegacyConflict() => ModLoader.Mods.Any(x => x.Manifest?.ID == "player.launchgiftportraits" && x.IsEnabled && !x.Manifest.Prerequisites.Contains(ModId));
+    void StoryDiagnostic(string name, object data) => Event(name.Contains("pending") ? "error" : "debug", name, data);
+    Catalog ReadCatalog()
+    {
+        var sources = new[] { Path.Combine(Root, "packs") }.Concat(ContentSources.Snapshot.Values).ToArray();
+        Event("info", "content.load.begin", new { sources });
+        var result = PackReader.LoadSources(sources, Log, dialogueKeys);
+        Event("info", "content.load.complete", new { packs = result.Packs.Select(x => new { x.Id, x.Root, x.Priority }), conflicts = result.Conflicts });
+        return result;
+    }
+    void ContentChanged() => Guard("content registration", () =>
+    {
+        if (!Enabled) return;
+        Debugger.CancelImmediately();
+        Portrait.Restore(); SpecialDisplay.Restore(); RemoveOwnedFactories();
+        Catalog = ReadCatalog();
+        RegisterActors();
+        foreach (var directory in UObj.FindObjectsOfType<ModItemDirectory>()) RegisterItems(directory);
+        Assets.RefreshItemOwners();
+        SpecialDisplay.Apply(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+        Portrait.Arrival();
+        Log("Content sources refreshed: " + Catalog.Packs.Count + " packs");
+    });
     void NewGame(string id) => Loaded();
     void SceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode) => Guard("special", () => SpecialDisplay.Apply(scene));
     void Loaded() => Guard("load", () =>
     {
+        Debugger.CancelImmediately();
         RegisterActors();
         foreach (var directory in UObj.FindObjectsOfType<ModItemDirectory>()) RegisterItems(directory);
         Host.CheckDependencies();
@@ -128,6 +183,7 @@ public sealed class RuntimeMod : IMod
     });
     GameItem MakeItem(Entry<ItemDef> entry)
     {
+        Event("debug", "item.create", new { pack = entry.Pack.Id, entry.Id, entry.Value.Grid, entry.Value.Value });
         var d = entry.Value;
         var item = new GameItemElement(entry.Id, d.Atlas, d.Sprite);
         item.name = d.Name; item.shortDescription = d.Description;
@@ -154,11 +210,13 @@ public sealed class RuntimeMod : IMod
     }
     void ResumeActors() => Guard("resume actors", () =>
     {
+        if (Debugger.Active) return;
         foreach (var e in Catalog.Actors.Values)
             if (Host.Get(e.Pack.Id + "/_active/" + e.Id) == "yes") Host.QueueActor(e.Id);
     });
     void Generate(StoreClientManager manager) => Guard("generate", () =>
     {
+        if (Debugger.Active) return;
         foreach (var e in Catalog.Actors.Values)
         {
             var key = e.Pack.Id + "/_actor/" + e.Id;
@@ -168,11 +226,13 @@ public sealed class RuntimeMod : IMod
     public void Diagnostics()
     {
         var blueprint = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
-        var value = new { gameHash = SupportedHash, runtime = "0.1.0", packs = Catalog.Packs.Select(x => new { x.Id, x.Priority }), conflicts = Catalog.Conflicts,
+        var value = new { gameHash = SupportedHash, runtime = "0.2.0", sources = ContentSources.Snapshot, debug = Debugger.Summary(), packs = Catalog.Packs.Select(x => new { x.Id, x.Priority }), conflicts = Catalog.Conflicts,
             client = blueprint == null ? null : new { blueprint.identifier, blueprint.spriteName, factory = Origins.TryGetValue(blueprint, out var f) ? f.Factory : "" },
-            cacheBytes = Assets.Bytes, cacheEntries = Assets.Count, timestamp = DateTime.UtcNow.ToString("O"), stage = "runtime-user-initiated" };
-        File.WriteAllText(Path.Combine(Root, "diagnostics.json"), JsonConvert.SerializeObject(value, Formatting.Indented));
-        Log("Diagnostics written to " + Path.Combine(Root, "diagnostics.json"));
+            cacheBytes = Assets.Bytes, cacheEntries = Assets.Count, traceSession = Trace?.Session, logs = Trace?.Files, droppedLogs = Trace?.Dropped, logFailure = Trace?.Failure,
+            timestamp = DateTime.UtcNow.ToString("O"), stage = "runtime-user-initiated" };
+        var path = Path.Combine(Trace.DirectoryPath, "diagnostics-" + Trace.Session + ".json");
+        File.WriteAllText(path, JsonConvert.SerializeObject(value, Formatting.Indented));
+        Log("Diagnostics written to " + path);
     }
 }
 public sealed class RuntimePump : MonoBehaviour
@@ -182,12 +242,14 @@ public sealed class RuntimePump : MonoBehaviour
         var r = RuntimeMod.Current; if (r == null || !r.Enabled) return;
         RuntimeMod.Guard("tick", () =>
         {
+            if (Time.frameCount % 120 == 0 && RuntimeMod.HasLegacyConflict()) { RuntimeMod.Log("Old standalone beauty Mod conflicts with runtime. Install the dependent content edition."); r.OnDisable(); return; }
+            if (Input.GetKeyDown(r.Settings.DebugHotkeyCode)) r.Debugger.Open = !r.Debugger.Open;
             if (Input.GetKeyDown(r.Settings.HotkeyCode)) r.Settings.Open = !r.Settings.Open;
             if (Input.GetKeyDown(KeyCode.F11)) r.Diagnostics();
-            if (Input.GetKeyDown(KeyCode.F12)) r.Host.QueueActor("demo.courier");
-            if (Input.GetKeyDown(KeyCode.Escape)) r.Settings.Open = false;
+            if (Input.GetKeyDown(KeyCode.Escape)) { r.Settings.Open = false; r.Debugger.Open = false; }
+            r.Debugger.Tick();
         });
     }
     void LateUpdate() => RuntimeMod.Guard("display", () => RuntimeMod.Current?.Settings.Apply());
-    void OnGUI() { var r = RuntimeMod.Current; if (r?.Settings.Open == true) r.Settings.Draw(); }
+    void OnGUI() { var r = RuntimeMod.Current; if (r?.Settings.Open == true) r.Settings.Draw(); if (r != null && (r.Debugger.Open || r.Debugger.Active)) r.Debugger.Draw(); }
 }

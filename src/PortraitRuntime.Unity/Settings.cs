@@ -15,6 +15,9 @@ public sealed class Settings
     public float NameY { get; set; }
     public int CacheMiB { get; set; } = 256;
     public string Hotkey { get; set; } = "F10";
+    public string DebugHotkey { get; set; } = "F7";
+    public bool DetailedLogging { get; set; } = true;
+    [JsonIgnore] public KeyCode DebugHotkeyCode => Enum.TryParse(DebugHotkey, true, out KeyCode value) && (value == KeyCode.F7 || value == KeyCode.F8) ? value : KeyCode.F7;
     [JsonIgnore] public KeyCode HotkeyCode => Enum.TryParse(Hotkey, true, out KeyCode value) ? value : KeyCode.F10;
     [JsonIgnore] public bool Open;
     string path;
@@ -47,7 +50,8 @@ public sealed class Settings
     }
     public void Apply()
     {
-        if (Open && blocker == null && CustomUIManager.Instance != null)
+        bool anyOpen = Open || RuntimeMod.Current?.Debugger.Open == true;
+        if (anyOpen && blocker == null && CustomUIManager.Instance != null)
         {
             var layer = CustomUIManager.Instance.GetLayerRoot("overlay");
             if (layer != null)
@@ -58,7 +62,7 @@ public sealed class Settings
                 var blockerImage = blocker.GetComponent<UnityEngine.UI.Image>(); blockerImage.color = Color.clear; blockerImage.raycastTarget = true;
             }
         }
-        if (!Open && blocker != null) { UnityEngine.Object.Destroy(blocker); blocker = null; }
+        if (!anyOpen && blocker != null) { UnityEngine.Object.Destroy(blocker); blocker = null; }
         var image = RuntimeMod.Current?.Portrait.Renderer ?? StoreClientMono.Instance?.image;
         var target = image?.transform;
         if (target != portrait)
@@ -109,9 +113,11 @@ public sealed class Settings
         portraitOwned = false;
     }
     public void Draw() => window = GUI.Window(7610, window, Window, "深空内容核心库 · 显示设置");
+    public void Save() { if (path != null) File.WriteAllText(path, JsonConvert.SerializeObject(this, Formatting.Indented)); }
     void Window(int id)
     {
-        GUILayout.Label("F10 设置 · F11 诊断 · F12 示范人物");
+        GUILayout.Label("F7 调试台 · F10 设置 · F11 诊断");
+        DebugHotkey = GUILayout.Toggle(DebugHotkey == "F8", "使用 F8 打开调试台（默认 F7）") ? "F8" : "F7";
         Crisp = GUILayout.Toggle(Crisp, "高清立绘");
         void Slider(string label, ref float value, float min, float max) { GUILayout.Label(label + " " + value.ToString("0.00")); value = GUILayout.HorizontalSlider(value, min, max); }
         float s = PortraitScale, x = PortraitX, y = PortraitY, bx = BubbleX, by = BubbleY, nx = NameX, ny = NameY;
@@ -119,7 +125,7 @@ public sealed class Settings
         Slider("气泡 X", ref bx, -600, 600); Slider("气泡 Y", ref by, -600, 600);
         Slider("姓名框 X", ref nx, -600, 600); Slider("姓名框 Y", ref ny, -600, 600);
         PortraitScale = s; PortraitX = x; PortraitY = y; BubbleX = bx; BubbleY = by; NameX = nx; NameY = ny;
-        if (GUILayout.Button("保存")) File.WriteAllText(path, JsonConvert.SerializeObject(this, Formatting.Indented));
+        if (GUILayout.Button("保存")) Save();
         if (GUILayout.Button("重置")) { Restore(); PortraitScale = 1; PortraitX = PortraitY = BubbleX = BubbleY = NameX = NameY = 0; }
         if (GUILayout.Button("关闭")) Open = false;
         GUI.DragWindow(new Rect(0, 0, 460, 25));

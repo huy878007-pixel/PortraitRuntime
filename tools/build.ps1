@@ -7,6 +7,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Runtime build failed' }
     dotnet build src/PortraitRuntime.Cli -c Release --nologo
     if ($LASTEXITCODE -ne 0) { throw 'Tool build failed' }
+    dotnet build src/LaunchGiftPortraits.Content -c Release --nologo
+    if ($LASTEXITCODE -ne 0) { throw 'Beauty content bridge build failed' }
+    python tools/build_debug_catalog.py
+    if ($LASTEXITCODE -ne 0) { throw 'Debug catalog generation failed' }
     if (-not $SkipTests) {
         dotnet run --project tests/PortraitRuntime.Tests -c Release
         if ($LASTEXITCODE -ne 0) { throw 'Core tests failed' }

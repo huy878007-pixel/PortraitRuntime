@@ -26,6 +26,9 @@ public sealed class PortraitDisplay
             factory = r.Origins.TryGetValue(now, out var tag) ? tag.Factory : null;
             definition = r.Catalog.Character(now.identifier, factory);
             if (Catalog.HasIdentity(now.identifier) && r.Catalog.Actors.TryGetValue(now.identifier, out var actor)) r.Catalog.Characters.TryGetValue(actor.Pack.Id + "/" + actor.Value.Character, out definition);
+            var test = r.Debugger.CurrentCase;
+            if (r.Debugger.IsSynthetic(now) && test?.PackId != null) r.Catalog.Characters.TryGetValue(test.PackId + "/" + test.CharacterId, out definition);
+            RuntimeMod.Event("debug", "portrait.resolve", new { now.identifier, factory, now.spriteName, character = definition?.Id, pack = definition?.Pack.Id, renderer = bound.name, original = vanilla?.name });
         }
         if (definition == null) return;
         var asset = r.Catalog.CharacterAsset(now.identifier, factory, now.spriteName);
@@ -39,6 +42,7 @@ public sealed class PortraitDisplay
         if (bound == null || vanilla == null) return;
         applied = RuntimeMod.Current.Assets.Get(pack, path, vanilla, bound);
         bound.sprite = applied;
+        RuntimeMod.Event("debug", "portrait.applied", new { pack = pack.Id, path, sprite = applied.name, renderer = bound.name });
     }
     public void Dialogue(Dialogue dialogue)
     {

@@ -18,6 +18,12 @@ public static class Hooks
             harmony.Patch(target, Hook(prefix), Hook(postfix));
         }
         Patch(typeof(PlayerStore), "GetNextClient", nameof(BeforeNext), nameof(Arrival));
+        Patch(typeof(PlayerStore), "SaveGame", prefix: nameof(SaveAllowed));
+        Patch(typeof(StoreClientManager), "TrackClientVisit", prefix: nameof(PreviewStatsAllowed));
+        Patch(typeof(RunStats), "OnCustomerArrived", prefix: nameof(PreviewStatsAllowed));
+        Patch(typeof(PlayerStore), "OnCriminalVisit", prefix: nameof(PreviewStatsAllowed));
+        Patch(typeof(ClientSpriteVariety), "OnClientShown", prefix: nameof(PreviewSideEffectAllowed));
+        Patch(typeof(TutorialUIManager), "NoMoreCustomer", prefix: nameof(PreviewSideEffectAllowed));
         Patch(typeof(StoreUIManager), "OnNextClientArrived", postfix: nameof(Arrival));
         Patch(typeof(StoreClientMono), "OnLeft", postfix: nameof(Left));
         Patch(typeof(StoreUIManager), "RunMorningDialogue", prefix: nameof(Morning));
@@ -43,10 +49,20 @@ public static class Hooks
         var r = RuntimeMod.Current;
         r.Origins.Remove(__result);
         r.Origins.Add(__result, new RuntimeMod.FactoryTag { Factory = __originalMethod.DeclaringType.Name + "." + __originalMethod.Name });
+        RuntimeMod.Event("debug", "client.created", new { factory = __originalMethod.DeclaringType.Name + "." + __originalMethod.Name, __result.identifier, __result.spriteName, __result.displayName });
     }
     static void BeforeNext() { if (Active) { RuntimeMod.Current.Portrait.Restore(); RuntimeMod.Current.Settings.ResetPortrait(); } }
-    static void Arrival() { if (Active) RuntimeMod.Guard("arrival", () => RuntimeMod.Current.Portrait.Arrival()); }
-    static void Left(StoreClientMono __instance) { if (Active && RuntimeMod.Current.Portrait.Renderer == __instance.image) { RuntimeMod.Current.Portrait.Restore(); RuntimeMod.Current.Settings.ResetPortrait(); } }
+    static bool SaveAllowed() { if (Active && RuntimeMod.Current.Debugger.BlocksSave) { RuntimeMod.Event("warning", "debug.save.suspended"); return false; } return true; }
+    static bool PreviewStatsAllowed(StoreClient __0) => !Active || !RuntimeMod.Current.Debugger.IsSynthetic(__0);
+    static bool PreviewSideEffectAllowed() => !Active || !RuntimeMod.Current.Debugger.Preview;
+    static void Arrival(MethodBase __originalMethod)
+    { if (Active) RuntimeMod.Guard("arrival", () => { RuntimeMod.Current.Portrait.Arrival(); if (__originalMethod.DeclaringType == typeof(StoreUIManager)) RuntimeMod.Current.Debugger.Arrived(); }); }
+    static void Left(StoreClientMono __instance)
+    {
+        if (!Active) return;
+        if (RuntimeMod.Current.Portrait.Renderer == __instance.image) { RuntimeMod.Current.Portrait.Restore(); RuntimeMod.Current.Settings.ResetPortrait(); }
+        RuntimeMod.Current.Debugger.Left();
+    }
     static void Morning()
     {
         if (Active) RuntimeMod.Guard("morning portrait", () =>
@@ -56,7 +72,16 @@ public static class Hooks
             RuntimeMod.Current.Portrait.Arrival(StoreUIManager.Instance.clientGameObject.image);
         });
     }
-    static void Display(Dialogue dialogue) { if (Active) RuntimeMod.Guard("dialogue", () => RuntimeMod.Current.Portrait.Dialogue(dialogue)); }
+    static void Display(Dialogue dialogue)
+    {
+        if (Active) RuntimeMod.Guard("dialogue", () =>
+        {
+            var r = RuntimeMod.Current; r.DialogueTags.TryGetValue(dialogue, out var tag);
+            RuntimeMod.Event("debug", "dialogue.display", new { key = tag?.Key, tracked = tag != null, identity = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint()?.identifier,
+                text = dialogue?.plainText?.Substring(0, Math.Min(512, dialogue.plainText.Length)) });
+            r.Portrait.Dialogue(dialogue);
+        });
+    }
     static void Bubble(DialogUIManager __instance) { if (Active) RuntimeMod.Current.Settings.CaptureBubble(__instance); }
     static void Localized(string table, string key, ref string __result)
     {

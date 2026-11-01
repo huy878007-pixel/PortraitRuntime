@@ -39,6 +39,7 @@ public sealed class SpriteCache
                 UObj.DontDestroyOnLoad(texture); UObj.DontDestroyOnLoad(sprite);
                 value = new Cached { Key = key, Texture = texture, Sprite = sprite, Bytes = texture.width * (long)texture.height * 4 };
                 cache.Add(key, value);
+                RuntimeMod.Event("debug", "asset.loaded", new { pack = pack.Id, path, texture.width, texture.height, bytes = value.Bytes, logicalSize, ppu = sprite.pixelsPerUnit });
             }
             catch { UObj.Destroy(texture); throw; }
         }
@@ -60,6 +61,15 @@ public sealed class SpriteCache
                 if (weak.TryGetTarget(out var owner) && owner is GameItemElement item)
                 { RuntimeMod.Guard("restore item image", item.ValidatePartialSprite); Release(item); }
     }
+    public void RefreshItemOwners()
+    {
+        var owners = cache.Values.SelectMany(c => c.Owners).Select(w => w.TryGetTarget(out var owner) ? owner : null).OfType<GameItemElement>().Distinct().ToArray();
+        foreach (var item in owners)
+        {
+            RuntimeMod.Guard("refresh item image", item.ValidatePartialSprite);
+            if (!RuntimeMod.Current.Catalog.ItemIcons.ContainsKey(item.identifier)) Release(item);
+        }
+    }
     bool Bound(Cached c)
     {
         c.Owners.RemoveAll(w => !w.TryGetTarget(out var o) || (o is UObj u && u == null) || !bindings.TryGetValue(o, out var b) || b.Key != c.Key);
@@ -72,6 +82,7 @@ public sealed class SpriteCache
             if (!allUnbound && Bytes <= Budget) break;
             if (Bound(c)) continue;
             UObj.Destroy(c.Sprite); UObj.Destroy(c.Texture); cache.Remove(c.Key);
+            RuntimeMod.Event("debug", "asset.evicted", new { c.Key, c.Bytes });
         }
     }
 }

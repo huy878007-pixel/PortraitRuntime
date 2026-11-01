@@ -1,6 +1,8 @@
 # 数据包格式与扩展 API
 
-格式 `portrait-pack/1`；每个包为独立文件夹，内含 `pack.json` 和图片。放入运行时 `packs/` 后重启游戏。运行时版本 0.1.0。
+格式 `portrait-pack/1`；每个包为独立文件夹，内含 `pack.json` 和图片。放入运行时或已注册内容 Mod 的 `packs/` 后重启游戏。运行时版本 0.2.0。
+
+独立内容 Mod 声明对 `player.portraitruntime` 的 Prerequisites，引用核心 DLL（不要复制核心 DLL 到内容 Mod）。OnEnable 调用 `ContentSources.Register(modId, packs绝对目录)`，OnDisable 调用 `ContentSources.Unregister(modId)`；核心监听变更，跨内容源统一校验依赖和优先级。见 `src/LaunchGiftPortraits.Content` 的实现。
 
 ## 包与覆盖规则
 

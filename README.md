@@ -1,6 +1,10 @@
 # 深空内容核心库 PortraitRuntime
 
-本地开发版本 0.1.0。目标游戏：Probably Stolen 0.46D / BuildID 26337366。
+本地开发版本 0.2.0。目标游戏：Probably Stolen 0.46D / BuildID 26337366。
+
+交付分为两个 Mod：`player.portraitruntime` 是不含美术内容的核心库；`player.launchgiftportraits` 是依赖核心库的人物美化内容版。后者替换旧同 ID 独立美化版，安装前请备份旧版到 Mods 目录外。核心可单独使用。
+
+F7 打开核心调试界面，可改 F8；支持当天全部人物巡检、阶段与剧情配图巡检、单项预览、自动播放和问题报告。默认预览隔离剧情回调，真实来访模式需手动选择并使用测试存档。详细 JSONL 日志、F11 诊断和巡检报告位于游戏持久数据目录的 `PortraitRuntime/logs`。具体步骤见验收文档。
 
 核心库包含身份驱动的立绘与剧情配图、按物品 ID 的图标覆盖、特殊资源明确目标替换、新人物与剧情分支、新物品注册、原生 ModData 持久化、数据包工具和离线工作台。
 
@@ -37,6 +41,6 @@ python tools/verify_all.py
 
 见 `docs/使用与游戏验收.md`。本次构建不会自动写入游戏 Mods 目录，不会修改已有 Mod、玩家存档或工坊内容。
 
-新增剧情、人物、物品应在专用测试存档中验证。旧 `player.launchgiftportraits` 与此核心库应择一启用。新增内容通过 `ModHelper.SetModData/GetModData` 和游戏原生物品保存流程持久化。
+新增剧情、人物、物品应在专用测试存档中验证。旧独立美化版必须关闭；新依赖内容版与核心一起启用。交付中的剧情和图标示范默认关闭。新增内容通过 `ModHelper.SetModData/GetModData` 和游戏原生物品保存流程持久化。
 
 代码按 AGPL-3.0 提供；核心美术归原作者，沿用内容包声明的 CC BY-NC 4.0。游戏资源预览和五件图标测试素材保留游戏原有权利，仅供本机参考与测试。

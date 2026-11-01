@@ -31,6 +31,8 @@ def main():
 
     run('runtime-build', ['dotnet', 'build', 'src/PortraitRuntime.Unity', '-c', 'Release', '--nologo'])
     run('cli-build', ['dotnet', 'build', 'src/PortraitRuntime.Cli', '-c', 'Release', '--nologo'])
+    run('beauty-bridge-build', ['dotnet', 'build', 'src/LaunchGiftPortraits.Content', '-c', 'Release', '--nologo'])
+    run('debug-catalog', ['python', 'tools/build_debug_catalog.py'])
     run('core-tests', ['dotnet', 'run', '--project', 'tests/PortraitRuntime.Tests', '-c', 'Release'])
     run('python-lint', ['python', '-m', 'ruff', 'check', '--isolated', '--select', 'E,F', '--ignore', 'E501', 'tools', 'tests/workbench_test.py'])
     run('workbench-syntax', ['node', '--check', 'workbench/app.js'])

@@ -148,11 +148,17 @@ public static class PackReader
         }
     }
     public static Catalog Load(string directory, Action<string> report, ISet<string> dialogueKeys = null)
+        => LoadSources(new[] { directory }, report, dialogueKeys);
+    public static Catalog LoadSources(IEnumerable<string> directories, Action<string> report, ISet<string> dialogueKeys = null)
     {
         var loaded = new List<Pack>();
+        foreach (var directory in directories.Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+        if (!System.IO.Directory.Exists(directory)) { report("Rejected content source: " + directory); continue; }
         foreach (var root in System.IO.Directory.EnumerateDirectories(directory).OrderBy(x => x, StringComparer.Ordinal))
             try { var p = Read(root, dialogueKeys); if (p.Enabled) loaded.Add(p); }
             catch (Exception e) when (e is PackException || e is JsonException || e is IOException || e is ArgumentException || e is UnauthorizedAccessException) { report("Rejected " + root + ": " + e.Message); }
+        }
         var duplicates = loaded.GroupBy(x => x.Id).Where(g => g.Count() > 1).Select(g => g.Key).ToHashSet(StringComparer.Ordinal);
         foreach (var id in duplicates) report("Rejected duplicate pack id: " + id);
         loaded.RemoveAll(p => duplicates.Contains(p.Id));

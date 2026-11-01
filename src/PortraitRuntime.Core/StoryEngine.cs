@@ -13,6 +13,9 @@ public interface IStoryHost
 }
 public static class StoryEngine
 {
+    public static event Action<string, object> Diagnostic;
+    static void Emit(string name, object data)
+    { try { Diagnostic?.Invoke(name, data); } catch (Exception e) { System.Diagnostics.Debug.WriteLine(e); } }
     static readonly Dictionary<string, Action<Pack, Effect, IStoryHost>> extensions = new(StringComparer.Ordinal);
     public static void RegisterEffect(string id, Action<Pack, Effect, IStoryHost> handler)
     {
@@ -43,7 +46,8 @@ public static class StoryEngine
         catch (Exception e)
         {
             host.Set(key, scope);
-            report("Pending effects for " + actorId + ": " + e.Message);
+            Emit("effect.pending", new { pack = pack.Id, actorId, scope, exception = e.ToString() });
+            report("Pending effects for " + actorId + ": " + e);
             return false;
         }
     }
@@ -61,7 +65,8 @@ public static class StoryEngine
         {
             var action = actions[i];
             var marker = pack.Id + "/_effect/" + (action.OnceKey ?? scope + "/" + i);
-            if (host.Get(marker) == "done") continue;
+            if (host.Get(marker) == "done") { Emit("effect.skipped", new { pack = pack.Id, scope, index = i, action.Op, marker }); continue; }
+            Emit("effect.begin", new { pack = pack.Id, scope, index = i, action.Op, action.Key, action.Amount, action.Value, marker });
             switch (action.Op)
             {
                 case "set": host.Set(pack.Id + "/" + action.Key, action.Value); break;
@@ -89,6 +94,7 @@ public static class StoryEngine
                 default: throw new InvalidOperationException("Unknown effect: " + action.Op);
             }
             host.Set(marker, "done");
+            Emit("effect.complete", new { pack = pack.Id, scope, index = i, action.Op, marker });
         }
     }
 }

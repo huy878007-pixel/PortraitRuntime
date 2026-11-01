@@ -11,6 +11,7 @@ public sealed class NativeHost : IStoryHost
     {
         if (PlayerStore.Instance == null) throw new InvalidOperationException("No loaded run");
         ModHelper.SetModData(RuntimeMod.ModId, key, value);
+        RuntimeMod.Event("debug", "state.write", new { key, value });
     }
     public int CountItem(string id)
     {
