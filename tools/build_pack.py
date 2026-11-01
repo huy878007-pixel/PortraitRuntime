@@ -12,8 +12,8 @@ from xml.etree.ElementTree import Element, SubElement, ElementTree
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-CORE_VERSION = '0.3.0'
-BEAUTY_VERSION = '2.1.0'
+CORE_VERSION = '0.3.1'
+BEAUTY_VERSION = '2.1.1'
 
 
 def sha(path):
@@ -72,7 +72,7 @@ def main():
     (runtime / 'packs').mkdir()
     (runtime / 'packs/内容包说明.txt').write_text('核心库不附带人物美术。人物美化 Mod 通过依赖关系注册独立内容目录；也可在此添加社区包目录。', encoding='utf-8')
     (runtime / 'catalogs').mkdir()
-    for name in ['dialogue_keys.json', 'special_targets.json', 'debug_visits.json']:
+    for name in ['dialogue_keys.json', 'debug_visits.json']:
         shutil.copy2(ROOT / 'catalogs' / name, runtime / 'catalogs' / name)
     manifest(runtime, 'player.portraitruntime', '深空内容核心库 · F3调试台', CORE_VERSION,
              '独立内容运行时，无人物美术。F3调试台（可改F4），当天人物巡览、剧情配图巡检、详细日志、F11诊断。显示设置由人物美化内容包提供。',
@@ -80,6 +80,8 @@ def main():
     bridge = ROOT / 'src/LaunchGiftPortraits.Content/bin/Release/netstandard2.1/LaunchGiftPortraits.Content.dll'
     shutil.copy2(bridge, beauty / bridge.name)
     (beauty / 'portrait-content.marker').write_text('portrait-content/1\n', encoding='utf-8')
+    # Scene knowledge for the special artwork belongs to the beauty Mod: the core performs no replacement.
+    shutil.copy2(ROOT / 'catalogs/special_targets.json', beauty / 'special_targets.json')
     shutil.copytree(ROOT / 'packs', beauty / 'packs')
     for sample in ['demo', 'icon-examples']:
         path = beauty / 'packs' / sample / 'pack.json'

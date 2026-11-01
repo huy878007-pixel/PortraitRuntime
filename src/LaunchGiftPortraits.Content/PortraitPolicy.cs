@@ -25,6 +25,18 @@ static class PortraitPolicy
                 // The exit animation must not keep a story-differential image: fall back to the base.
                 Arrival(Parse(payload)?["context"] as JObject);
                 break;
+            case PortraitApiNames.Enabled: SpritePresenter.Bind(); break;
+            case PortraitApiNames.ContentChanged:
+            case PortraitApiNames.Scene:
+                SpritePresenter.Clear();
+                SpecialTargets.Refresh();
+                Show(null, "base");
+                break;
+            case PortraitApiNames.Disabled:
+                Forget();
+                SpritePresenter.Unbind();
+                SpecialTargets.Restore();
+                break;
             case PortraitApiNames.BeforeArrival:
             case PortraitApiNames.Left: Forget(); break;
         }
@@ -85,4 +97,8 @@ static class PortraitApiNames
     public const string Left = "client.left";
     public const string Dialogue = "dialogue.display";
     public const string Outside = "client.outside";
+    public const string Enabled = "runtime.enabled";
+    public const string Disabled = "runtime.disabled";
+    public const string ContentChanged = "content.changed";
+    public const string Scene = "scene.loaded";
 }

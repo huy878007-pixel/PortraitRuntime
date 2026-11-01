@@ -166,17 +166,18 @@ public static class Hooks
     }
     static void ItemSprite(GameItemElement __instance, ref Sprite __result)
     {
-        if (!Active) return;
+        if (!Active || __result == null) return;
+        var resolver = PortraitApi.ItemResolver;
+        if (resolver == null) return;
+        string answer;
+        try { answer = resolver(__instance.identifier ?? ""); }
+        catch (Exception e) { RuntimeMod.Log("Item resolver failed: " + e.Message); return; }
+        if (string.IsNullOrEmpty(answer)) return;
         var r = RuntimeMod.Current;
-        r.Catalog.ItemIcons.TryGetValue(__instance.identifier ?? "", out var entry);
-        if (entry?.Value.Icon == null) return;
-        try
-        {
-            var creator = r.Catalog.ItemCreators.TryGetValue(__instance.identifier, out var created) ? created : null;
-            Vector2? logicalSize = creator != null ? new Vector2(creator.Value.Grid[0] * (UISettings.current?.gridSize ?? 16), creator.Value.Grid[1] * (UISettings.current?.gridSize ?? 16)) : null;
-            __result = r.Assets.Get(entry.Pack, entry.Value.Icon, __result, __instance, logicalSize);
-        }
-        catch (Exception e) { RuntimeMod.Log("Item fallback " + entry.Id + ": " + e.Message); }
+        var creator = r.Catalog.ItemCreators.TryGetValue(__instance.identifier ?? "", out var created) ? created : null;
+        Vector2? logicalSize = creator != null ? new Vector2(creator.Value.Grid[0] * (UISettings.current?.gridSize ?? 16), creator.Value.Grid[1] * (UISettings.current?.gridSize ?? 16)) : null;
+        var replaced = PortraitApi.Load(answer, __result, __instance, logicalSize);
+        if (replaced != null) __result = replaced;
     }
     static void Owned(GameItem item, bool own)
     {
@@ -187,9 +188,13 @@ public static class Hooks
     static void Special(ref Sprite __result)
     {
         if (!Active || __result == null) return;
-        var r = RuntimeMod.Current;
-        if (!r.Catalog.Specials.TryGetValue(__result.name, out var entry)) return;
-        try { __result = r.Assets.Get(entry.Pack, entry.Value, __result); }
-        catch (Exception e) { RuntimeMod.Log("Special fallback " + entry.Id + ": " + e.Message); }
+        var resolver = PortraitApi.SpriteResolver;
+        if (resolver == null) return;
+        string answer;
+        try { answer = resolver(__result.name); }
+        catch (Exception e) { RuntimeMod.Log("Sprite resolver failed for " + __result.name + ": " + e.Message); return; }
+        if (string.IsNullOrEmpty(answer)) return;
+        var replaced = PortraitApi.Load(answer, __result);
+        if (replaced != null) __result = replaced;
     }
 }

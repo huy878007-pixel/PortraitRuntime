@@ -1,6 +1,6 @@
 # 数据包格式与扩展 API
 
-格式 `portrait-pack/1`；每个包为独立文件夹，内含 `pack.json` 和图片。放入运行时或已注册内容 Mod 的 `packs/` 后重启游戏。运行时版本 0.3.0。
+格式 `portrait-pack/1`；每个包为独立文件夹，内含 `pack.json` 和图片。放入运行时或已注册内容 Mod 的 `packs/` 后重启游戏。运行时版本 0.3.1。
 
 独立内容 Mod 声明对 `player.portraitruntime` 的 Prerequisites，根目录放 `portrait-content.marker`，数据包放固定 `packs/` 子目录。核心读取原生 ModLoader 的启用状态，在载入和定期检查时注册或移除内容，统一校验依赖和优先级。内容 Mod 不引用或复制核心 DLL：游戏原生扫描不会因声明前置 Mod 就允许跨 Mod 程序集引用。见 `src/LaunchGiftPortraits.Content` 的实现。
 
@@ -108,15 +108,21 @@ StoryEngine.UnregisterEffect("myplugin.doubleCredit");
 
 | 成员 | 说明 |
 |---|---|
-| `Version` | 接口版本，当前 `1` |
-| `Capabilities` | `lifecycle/1`、`lookup/1`、`apply/1`、`status/1` |
+| `Version` | 接口版本，当前 `2` |
+| `Capabilities` | `lifecycle/1`、`lookup/1`、`assets/1`、`apply/1`、`status/1` |
 | `Subscribe(Action<string,string>)` / `Unsubscribe(...)` | 注册与注销生命周期回调 |
-| `Lookup(json)` | `{identity,factory,spriteKey,dialogueKey}` → `{ok,pack,path,character,via,reason}` |
+| `SetSpriteResolver(Func<string,string>)` | 注册精灵替换决策：给原生精灵名，返回 `"包ID\|相对路径"` 表示替换，返回 null 表示保持原版 |
+| `SetItemResolver(Func<string,string>)` | 同上，键为物品 ID |
+| `Lookup(json)` | 传入 `{identity,factory,spriteKey,dialogueKey}` 解析人物立绘；传入 `{kind:"special"\|"item",key}` 解析特殊资源或物品图标。结果 `{ok,pack,path,character,via,reason}` |
 | `Apply(json)` | `{pack,path}` → 应用到当前绑定的立绘 renderer，返回是否成功 |
-| `Restore()` | 还原原版图并释放缓存绑定 |
-| `Status()` | 版本、能力、订阅数、运行状态与已加载包 |
+| `Restore()` | 还原当前绑定的立绘并释放缓存绑定 |
+| `ApplyTo(target,pack,path)` | 把资源应用到依赖 Mod 自己找到的 renderer（场景特殊资源、物品图标），返回是否成功 |
+| `ReleaseTo(target)` | 释放该 renderer 的缓存绑定 |
+| `Status()` | 版本、能力、订阅数、两个 resolver 是否注册、运行状态与已加载包 |
 
 `Lookup` 与调试台的取图共用同一条 `SpriteLookup` 规则，因此预览、美化包与游戏内显示不会各说各话。
+
+**核心自身不替换任何图片**。`SpriteDict.GetSprite` 与 `RenderHandler.LoadFromFile` 的钩子只做一件事：把原生精灵名交给已注册的 resolver；返回空就什么都不做。物品图标同理。特殊资源（通缉令、通缉头像、`drjackson2`）的场景坐标表 `special_targets.json` 随美化包分发，核心完全没有场景知识。
 
 生命周期节点：
 
@@ -132,7 +138,7 @@ StoryEngine.UnregisterEffect("myplugin.doubleCredit");
 | `client.outside` | 柜台外特殊来访（`MapUIManager.ActivateClientOutsideStore`） | identity、factory、spriteKey |
 | `scene.loaded` | 场景切换 | index、name、loaded |
 
-失败兜底与资源释放：回调抛出的异常被捕获并写 `api.subscriber.failed`，不会中断核心；核心在所有离场与禁用路径调用 `Restore()` 释放缓存绑定；依赖 Mod 关闭后核心不再回调，也不保留其图片与相机状态。启用顺序不影响结果——后启用的一方在 `runtime.enabled` 时补发一次当前状态，先启用的一方靠 `client.arrival` 等节点自然追上。
+失败兜底与资源释放：回调抛出的异常被捕获并写 `api.subscriber.failed`，不会中断核心；resolver 抛异常只记日志并保持原版图；核心在所有离场与禁用路径调用 `Restore()` 释放缓存绑定；依赖 Mod 关闭后核心解绑它的回调与 resolver，不保留任何图片、位置或相机状态。启用顺序不影响结果——后启用的一方在 `runtime.enabled` 时重建 resolver，先启用的一方靠 `client.arrival` 等节点自然追上。
 
-**职责边界**：核心提供取图规则、renderer 绑定与还原、缓存、场景特殊资源替换、生命周期通知、调试台与日志；依赖 Mod 决定「显示哪张、什么时候显示」，并持有自己的偏移、缩放、高清偏好与 F10 窗口（`ui.json` 与美化 DLL 同目录保存）。美化包禁用时核心不做任何人物替换，F3 调试台和日志照常可用。
+**职责边界**：核心只做对接与通用资源服务——包加载与校验、取图规则、注册表（哪些包声明了哪些资源）、renderer 绑定与还原、贴图缓存、生命周期通知、调试台与日志。依赖 Mod 决定并执行所有替换：人物与剧情差分、特殊资源、物品图标、场景目标，以及自己的偏移、缩放、高清偏好与 F10 窗口（`ui.json` 与美化 DLL 同目录保存）。美化包禁用时核心不替换任何图片，F3 调试台和日志照常可用。
 

@@ -27,6 +27,10 @@ public sealed class BeautyContentMod : IMod
             return;
         }
         settings = LoadSettings();
+        // This package answers every sprite and item replacement the core asks about, and owns the
+        // scene specials the core no longer knows about.
+        SpritePresenter.Bind();
+        SpecialTargets.Refresh();
         // The frame host needs a live engine. If it cannot be created the bridge stays bound and the
         // Mod simply stops presenting, instead of taking the game's mod loader down with it.
         try
@@ -45,6 +49,8 @@ public sealed class BeautyContentMod : IMod
 
     public void OnDisable()
     {
+        SpecialTargets.Restore();
+        SpritePresenter.Unbind();
         if (host != null) { UObj.Destroy(host); host = null; }
         settings?.Restore();
         CoreBridge.Restore();

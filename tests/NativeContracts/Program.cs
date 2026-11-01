@@ -72,10 +72,19 @@ static class Contract
         api.GetMethod("Raise", BindingFlags.Public | BindingFlags.Static)!.Invoke(null, new object[] { "test.ping", new { n = 1 } });
         var bridgeType = assembly.GetType("LaunchGiftPortraits.Content.BeautyContentMod")!;
         string lastEvent = (string)bridgeType.GetProperty("LastEvent", BindingFlags.Public | BindingFlags.Static)!.GetValue(null)!;
-        bool handshake = (int)Property("Version")! == 1 && capabilities.Contains("lifecycle/1") && capabilities.Contains("lookup/1")
+        bool handshake = (int)Property("Version")! == 2 && capabilities.Contains("lifecycle/1") && capabilities.Contains("lookup/1") && capabilities.Contains("assets/1")
             && subscribersBound == 1 && lastEvent.StartsWith("test.ping", StringComparison.Ordinal);
+        string status = (string)api.GetMethod("Status", BindingFlags.Public | BindingFlags.Static)!.Invoke(null, null)!;
+        bool resolvers = status.Contains("\"spriteResolver\":true", StringComparison.Ordinal) && status.Contains("\"itemResolver\":true", StringComparison.Ordinal);
+        handshake &= resolvers;
         ok &= handshake;
-        checks.Add(new { target = "beauty Mod binds the core API by reflection and receives lifecycle events", found = handshake, version = Property("Version"), capabilities, lastEvent });
+        checks.Add(new { target = "beauty Mod binds the core API by reflection and registers the replacement resolvers", found = handshake, version = Property("Version"), capabilities, lastEvent });
+        foreach (var member in new[] { "ApplyTo", "ReleaseTo", "SetSpriteResolver", "SetItemResolver" })
+        {
+            var found = api.GetMethod(member, BindingFlags.Public | BindingFlags.Static) != null;
+            ok &= found;
+            checks.Add(new { target = "PortraitApi." + member, found });
+        }
         var loaded = new LoadedMod { Manifest = new ModManifest { ID = "player.launchgiftportraits", Prerequisites = new List<string> { "player.portraitruntime" } }, FolderPath = addonRoot, Instance = bridge, IsEnabled = true };
         ModLoader.Mods.Add(loaded);
         PortraitRuntime.Unity.RuntimeMod.RefreshContentSources();
@@ -83,9 +92,10 @@ static class Contract
         bool registered = alone.Characters.Count == 0 && both.Characters.Count == 17 && both.Characters.Sum(x => x.Value.Value.Story.Count) == 669;
         bridge.OnDisable();
         int subscribersAfter = (int)Property("SubscriberCount")!;
-        bool detached = subscribersAfter == 0;
+        string statusAfter = (string)api.GetMethod("Status", BindingFlags.Public | BindingFlags.Static)!.Invoke(null, null)!;
+        bool detached = subscribersAfter == 0 && statusAfter.Contains("\"spriteResolver\":false", StringComparison.Ordinal) && statusAfter.Contains("\"itemResolver\":false", StringComparison.Ordinal);
         ok &= detached;
-        checks.Add(new { target = "disabling the beauty Mod releases its core subscription", found = detached });
+        checks.Add(new { target = "disabling the beauty Mod releases its subscription and resolvers", found = detached });
         loaded.IsEnabled = false;
         PortraitRuntime.Unity.RuntimeMod.RefreshContentSources();
         ModLoader.Mods.Remove(loaded);

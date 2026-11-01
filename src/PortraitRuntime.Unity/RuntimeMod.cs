@@ -114,7 +114,6 @@ public sealed class RuntimeMod : IMod
         ModHook.OnGameLoadedLate += ResumeActors;
         ModHook.OnNewGameStarted += NewGame;
         UnityEngine.SceneManagement.SceneManager.sceneLoaded += SceneLoaded;
-        SpecialDisplay.Apply(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
         RegisterActors();
         foreach (var directory in UObj.FindObjectsOfType<ModItemDirectory>()) RegisterItems(directory);
         Log("Enabled; F3 debug console, F10 display settings, F11 diagnostics");
@@ -133,7 +132,6 @@ public sealed class RuntimeMod : IMod
         ModHook.OnGameLoadedLate -= ResumeActors;
         ModHook.OnNewGameStarted -= NewGame;
         UnityEngine.SceneManagement.SceneManager.sceneLoaded -= SceneLoaded;
-        SpecialDisplay.Restore();
         RemoveOwnedFactories();
         Portrait.Restore();
         harmony?.UnpatchAll(harmony.Id);
@@ -186,12 +184,11 @@ public sealed class RuntimeMod : IMod
     {
         if (!Enabled) return;
         Debugger.CancelImmediately();
-        Portrait.Restore(); SpecialDisplay.Restore(); RemoveOwnedFactories();
+        Portrait.Restore(); RemoveOwnedFactories();
         Catalog = ReadCatalog();
         RegisterActors();
         foreach (var directory in UObj.FindObjectsOfType<ModItemDirectory>()) RegisterItems(directory);
         Assets.RefreshItemOwners();
-        SpecialDisplay.Apply(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
         var current = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
         var renderer = StoreClientMono.Instance?.image;
         if (current != null && Portrait.Bind(renderer)) PortraitApi.Raise(PortraitApi.Arrival, Context(current, renderer));
@@ -201,7 +198,6 @@ public sealed class RuntimeMod : IMod
     void NewGame(string id) => Loaded();
     void SceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode) => Guard("special", () =>
     {
-        SpecialDisplay.Apply(scene);
         PortraitApi.Raise(PortraitApi.Scene, new { index = scene.buildIndex, name = scene.name, loaded = scene.isLoaded });
     });
     void Loaded() => Guard("load", () =>

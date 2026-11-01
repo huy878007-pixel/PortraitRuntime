@@ -46,6 +46,20 @@ static class CoreBridge
     public static void Restore() => api?.GetMethod("Restore", Statics)?.Invoke(null, null);
     public static string Status() => Call("Status", null) as string;
 
+    /// <summary>Register the delegate the core consults instead of guessing a replacement itself.</summary>
+    public static void SetSpriteResolver(object resolver) => Invoke("SetSpriteResolver", resolver);
+    public static void SetItemResolver(object resolver) => Invoke("SetItemResolver", resolver);
+    public static bool ApplyTo(object owner, string pack, string path) => Invoke("ApplyTo", owner, pack, path) is bool applied && applied;
+    public static void ReleaseTo(object owner) => Invoke("ReleaseTo", owner);
+
+    static object Invoke(string method, params object[] arguments)
+    {
+        var target = api?.GetMethod(method, Statics);
+        if (target == null) return null;
+        try { return target.Invoke(null, arguments); }
+        catch (Exception e) { return "bridge-error " + e.GetType().Name + ": " + e.Message; }
+    }
+
     static object Call(string method, string argument)
     {
         var target = api?.GetMethod(method, Statics);

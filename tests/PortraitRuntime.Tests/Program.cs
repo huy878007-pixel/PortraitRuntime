@@ -172,6 +172,18 @@ Test("anonymous change items are never bound to a named character", () =>
         Check(catalog.Character(c.Identity, c.Factory) == null, id + " was bound to " + catalog.Character(c.Identity, c.Factory)?.Id);
     }
 });
+Test("pack registry answers special and item lookups", () =>
+{
+    var core = new Catalog(); core.Add(ReadPack("core"));
+    var special = SpriteLookup.ResolveAsset(core, "special", "wanted");
+    Check(special.Ok && special.Pack == "core" && "special/" + "wanted.png" == "special/" + System.IO.Path.GetFileName(special.Path), "special wanted -> " + special.Path);
+    Check(!SpriteLookup.ResolveAsset(core, "special", "mentor").Ok, "a portrait sprite is not a special");
+    var demo = new Catalog(); demo.Add(ReadPack("demo"));
+    var icon = SpriteLookup.ResolveAsset(demo, "item", "demo.signal");
+    Check(icon.Ok && icon.Pack == "demo" && icon.Path != null, "item icon -> " + icon.Path);
+    Check(!SpriteLookup.ResolveAsset(demo, "item", "no.such.item").Ok);
+    Check(SpriteLookup.ResolveAsset(null, "special", "wanted").Reason == "runtime-absent");
+});
 Console.WriteLine($"RESULT {passed} passed; {failed} failed");
 Environment.ExitCode = failed == 0 ? 0 : 1;
 

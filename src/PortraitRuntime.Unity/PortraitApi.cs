@@ -6,15 +6,21 @@ namespace PortraitRuntime.Unity;
 
 /// <summary>
 /// Late-bound bridge for separately loaded content Mods.
-/// Everything crosses as JSON and BCL delegate types, because a dependent Mod that compiles against
-/// this assembly cannot load: the game's ModScanner only admits game assemblies plus that Mod's own
-/// manifest entries. The dependent side finds this type by reflection at OnEnable.
+/// Everything crosses as JSON, BCL delegate types and plain <see cref="object"/> handles, because a
+/// dependent Mod that compiles against this assembly cannot load: the game's ModScanner only admits
+/// game assemblies plus that Mod's own manifest entries. The dependent side finds this type by
+/// reflection at OnEnable.
+///
+/// The runtime owns the registry and the renderer plumbing; every "replace this with that" decision
+/// belongs to the content Mod, which answers through the resolvers below.
 /// </summary>
 public static class PortraitApi
 {
-    public static int Version => 1;
-    public static string[] Capabilities => new[] { "lifecycle/1", "lookup/1", "apply/1", "status/1" };
+    public static int Version => 2;
+    public static string[] Capabilities => new[] { "lifecycle/1", "lookup/1", "assets/1", "apply/1", "status/1" };
     public static int SubscriberCount { get { lock (subscribers) return subscribers.Count; } }
+    public static bool SpriteResolverReady => spriteResolver != null;
+    public static bool ItemResolverReady => itemResolver != null;
 
     // Lifecycle names. A handler receives (name, jsonPayload).
     public const string Enabled = "runtime.enabled";
@@ -29,6 +35,7 @@ public static class PortraitApi
     public const string OutsideStore = "client.outside";
 
     static readonly List<Action<string, string>> subscribers = new();
+    static Func<string, string> spriteResolver, itemResolver;
 
     public static void Subscribe(Action<string, string> handler)
     {
@@ -39,6 +46,19 @@ public static class PortraitApi
     {
         lock (subscribers) subscribers.Remove(handler);
     }
+
+    /// <summary>
+    /// The content Mod answers game sprite lookups: given the native sprite name, return
+    /// <c>"packId|relative/path"</c> to replace it, or null to leave it native.
+    /// </summary>
+    public static void SetSpriteResolver(Func<string, string> resolver) => spriteResolver = resolver;
+    /// <summary>Same contract for item icons, keyed by item identifier.</summary>
+    public static void SetItemResolver(Func<string, string> resolver) => itemResolver = resolver;
+
+    /// <summary>Consult the content Mod. Kept allocation-free: sprite lookups run on the render path.</summary>
+    internal static Func<string, string> SpriteResolver => spriteResolver;
+    internal static Func<string, string> ItemResolver => itemResolver;
+
     /// <summary>Fan out one lifecycle event. A throwing subscriber cannot break the runtime.</summary>
     public static void Raise(string name, object payload)
     {
@@ -56,24 +76,83 @@ public static class PortraitApi
         }
     }
 
-    /// <summary>resolve what a content pack would show for a client context -> {ok,pack,path,character,via,reason}</summary>
+    /// <summary>
+    /// Resolve a content asset. With <c>kind</c> set ("special" or "item") it answers from the pack
+    /// registry; otherwise it resolves the portrait for a client context.
+    /// All results are <c>{ok,pack,path,character,via,reason}</c>.
+    /// </summary>
     public static string Lookup(string request)
     {
         var query = Parse(request);
-        return JsonConvert.SerializeObject(SpriteLookup.Resolve(RuntimeMod.Current?.Catalog,
-            Get(query, "identity"), Get(query, "factory"), Get(query, "spriteKey"), Get(query, "dialogueKey")));
+        var kind = Get(query, "kind");
+        var catalog = RuntimeMod.Current?.Catalog;
+        return JsonConvert.SerializeObject(kind != null
+            ? SpriteLookup.ResolveAsset(catalog, kind, Get(query, "key"))
+            : SpriteLookup.Resolve(catalog, Get(query, "identity"), Get(query, "factory"), Get(query, "spriteKey"), Get(query, "dialogueKey")));
     }
-    /// <summary>apply a resolved content asset to the bound portrait renderer -> bool</summary>
+
+    /// <summary>apply a resolved asset to the bound portrait renderer -> bool</summary>
     public static bool Apply(string request)
     {
         var query = Parse(request);
         return RuntimeMod.Current?.Portrait.Apply(Get(query, "pack"), Get(query, "path")) == true;
     }
-    /// <summary>restore the renderer this bridge currently owns.</summary>
+    /// <summary>restore the portrait renderer this bridge currently owns.</summary>
     public static void Restore() => RuntimeMod.Current?.Portrait.Restore();
+
+    /// <summary>
+    /// Apply a resolved asset to an arbitrary renderer the content Mod located itself
+    /// (a scene special, an item icon). Returns false when the target is gone.
+    /// </summary>
+    public static bool ApplyTo(object target, string packId, string path)
+    {
+        var runtime = RuntimeMod.Current;
+        if (runtime == null || target == null || string.IsNullOrEmpty(path)) return false;
+        var owner = target as UnityEngine.Object;
+        if (owner == null) return false;
+        var pack = runtime.Catalog.Packs.FirstOrDefault(x => x.Id == packId);
+        if (pack == null) return false;
+        var renderer = owner as SpriteRenderer;
+        var image = owner as UnityEngine.UI.Image;
+        var template = renderer != null ? renderer.sprite : image != null ? image.sprite : null;
+        if (template == null) return false;
+        try
+        {
+            var sprite = runtime.Assets.Get(pack, path, template, owner);
+            if (renderer != null) renderer.sprite = sprite; else image.sprite = sprite;
+            return true;
+        }
+        catch (Exception e)
+        {
+            RuntimeMod.Log("Asset " + packId + "/" + path + " unavailable: " + e.Message);
+            return false;
+        }
+    }
+    /// <summary>Drop the cache binding the content Mod took on a renderer it applied to.</summary>
+    public static void ReleaseTo(object target) => RuntimeMod.Current?.Assets.Release(target as UnityEngine.Object);
+
+    /// <summary>Load an answer of the form <c>"packId|path"</c>; null when it is unusable.</summary>
+    internal static Sprite Load(string answer, Sprite template, object owner = null, Vector2? logicalSize = null)
+    {
+        var runtime = RuntimeMod.Current;
+        if (runtime == null || template == null || string.IsNullOrEmpty(answer)) return null;
+        var bar = answer.IndexOf('|');
+        if (bar <= 0 || bar == answer.Length - 1) return null;
+        var pack = runtime.Catalog.Packs.FirstOrDefault(x => x.Id == answer.Substring(0, bar));
+        if (pack == null) return null;
+        var path = answer.Substring(bar + 1);
+        try { return runtime.Assets.Get(pack, path, template, owner, logicalSize); }
+        catch (Exception e)
+        {
+            RuntimeMod.Log("Asset " + pack.Id + "/" + path + " unavailable: " + e.Message);
+            return null;
+        }
+    }
+
     public static string Status() => JsonConvert.SerializeObject(new
     {
         version = Version, capabilities = Capabilities, subscribers = SubscriberCount,
+        spriteResolver = SpriteResolverReady, itemResolver = ItemResolverReady,
         runtime = RuntimeMod.Current == null ? "absent" : RuntimeMod.Current.Enabled ? "enabled" : "disabled",
         packs = RuntimeMod.Current == null ? Array.Empty<string>() : RuntimeMod.Current.Catalog.Packs.Select(x => x.Id).ToArray(),
     });

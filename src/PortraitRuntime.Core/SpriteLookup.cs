@@ -33,4 +33,23 @@ public static class SpriteLookup
             ? new Result { Character = character.Id, Reason = "no-image" }
             : new Result { Ok = true, Pack = character.Pack.Id, Path = path, Character = character.Id, Via = "character" };
     }
+
+    /// <summary>
+    /// Resolve a non-character sprite the packs declare: a scene special or an item icon.
+    /// The registry lives here because packs are data; whether to use it stays a content Mod decision.
+    /// </summary>
+    public static Result ResolveAsset(Catalog catalog, string kind, string key)
+    {
+        if (catalog == null) return new Result { Reason = "runtime-absent" };
+        if (string.IsNullOrEmpty(key)) return new Result { Reason = "no-mapping" };
+        if (kind == "item")
+        {
+            if (catalog.ItemIcons.TryGetValue(key, out var item) && item.Value.Icon != null)
+                return new Result { Ok = true, Pack = item.Pack.Id, Path = item.Value.Icon, Via = "item" };
+            return new Result { Reason = "no-mapping" };
+        }
+        if (catalog.Specials.TryGetValue(key, out var special) && special.Value != null)
+            return new Result { Ok = true, Pack = special.Pack.Id, Path = special.Value, Via = "special" };
+        return new Result { Reason = "no-mapping" };
+    }
 }
