@@ -64,7 +64,7 @@ public sealed class RuntimeMod : IMod
         Current = this;
         Trace?.Dispose(); Trace = new TraceLog(Path.Combine(Application.persistentDataPath, "PortraitRuntime", "logs"));
         if (Trace.Failure != null) Debug.LogWarning("[PortraitRuntime] File logging unavailable: " + Trace.Failure);
-        Event("info", "runtime.init", new { runtime = "0.2.1", Root, manifest.ID });
+        Event("info", "runtime.init", new { runtime = "0.2.2", Root, manifest.ID });
         using var sha = SHA256.Create();
         using var stream = File.OpenRead(typeof(StoreClient).Assembly.Location);
         var hash = BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
@@ -102,7 +102,7 @@ public sealed class RuntimeMod : IMod
         SpecialDisplay.Apply(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
         RegisterActors();
         foreach (var directory in UObj.FindObjectsOfType<ModItemDirectory>()) RegisterItems(directory);
-        Log("Enabled; F7 debug console, F10 display settings, F11 diagnostics");
+        Log("Enabled; F3 debug console, F10 display settings, F11 diagnostics");
     }
     public void OnDisable()
     {
@@ -243,7 +243,7 @@ public sealed class RuntimeMod : IMod
     public void Diagnostics()
     {
         var blueprint = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
-        var value = new { gameHash = SupportedHash, runtime = "0.2.1", sources = ContentSources.Snapshot, debug = Debugger.Summary(), packs = Catalog.Packs.Select(x => new { x.Id, x.Priority }), conflicts = Catalog.Conflicts,
+        var value = new { gameHash = SupportedHash, runtime = "0.2.2", sources = ContentSources.Snapshot, debug = Debugger.Summary(), packs = Catalog.Packs.Select(x => new { x.Id, x.Priority }), conflicts = Catalog.Conflicts,
             client = blueprint == null ? null : new { blueprint.identifier, blueprint.spriteName, factory = Origins.TryGetValue(blueprint, out var f) ? f.Factory : "" },
             cacheBytes = Assets.Bytes, cacheEntries = Assets.Count, traceSession = Trace?.Session, logs = Trace?.Files, droppedLogs = Trace?.Dropped, logFailure = Trace?.Failure,
             timestamp = DateTime.UtcNow.ToString("O"), stage = "runtime-user-initiated" };
@@ -254,6 +254,18 @@ public sealed class RuntimeMod : IMod
 }
 public sealed class RuntimePump : MonoBehaviour
 {
+    bool firstTick = true, firstGui = true;
+    int lastToggleFrame = -1;
+    float nextHeartbeat;
+    void ToggleDebug(string source)
+    {
+        var r = RuntimeMod.Current;
+        if (r == null || !r.Enabled || lastToggleFrame == Time.frameCount) return;
+        lastToggleFrame = Time.frameCount;
+        r.Debugger.Open = !r.Debugger.Open;
+        RuntimeMod.Event("info", "debug.toggle", new { source, r.Settings.DebugHotkey, open = r.Debugger.Open });
+        Debug.Log("[PortraitRuntime] Debug console " + (r.Debugger.Open ? "opened" : "closed") + " via " + source);
+    }
     void Update()
     {
         var r = RuntimeMod.Current; if (r == null || !r.Enabled) return;
@@ -261,7 +273,9 @@ public sealed class RuntimePump : MonoBehaviour
         {
             if (Time.frameCount % 120 == 0 && RuntimeMod.HasLegacyConflict()) { RuntimeMod.Log("Old standalone beauty Mod conflicts with runtime. Install the dependent content edition."); r.OnDisable(); return; }
             if (Time.frameCount % 120 == 0) RuntimeMod.RefreshContentSources();
-            if (Input.GetKeyDown(r.Settings.DebugHotkeyCode)) r.Debugger.Open = !r.Debugger.Open;
+            if (firstTick) { firstTick = false; RuntimeMod.Event("info", "pump.update.started"); }
+            if (Time.unscaledTime >= nextHeartbeat) { nextHeartbeat = Time.unscaledTime + 30; RuntimeMod.Event("info", "pump.heartbeat", new { r.Settings.DebugHotkey, r.Debugger.Open, r.Debugger.Active }); }
+            if (Input.GetKeyDown(r.Settings.DebugHotkeyCode)) ToggleDebug("Input.GetKeyDown");
             if (Input.GetKeyDown(r.Settings.HotkeyCode)) r.Settings.Open = !r.Settings.Open;
             if (Input.GetKeyDown(KeyCode.F11)) r.Diagnostics();
             if (Input.GetKeyDown(KeyCode.Escape)) { r.Settings.Open = false; r.Debugger.Open = false; }
@@ -269,5 +283,19 @@ public sealed class RuntimePump : MonoBehaviour
         });
     }
     void LateUpdate() => RuntimeMod.Guard("display", () => RuntimeMod.Current?.Settings.Apply());
-    void OnGUI() { var r = RuntimeMod.Current; if (r?.Settings.Open == true) r.Settings.Draw(); if (r != null && (r.Debugger.Open || r.Debugger.Active)) r.Debugger.Draw(); }
+    void OnGUI()
+    {
+        var r = RuntimeMod.Current; if (r == null || !r.Enabled) return;
+        if (firstGui) { firstGui = false; RuntimeMod.Event("info", "pump.gui.started"); }
+        var evt = UnityEngine.Event.current;
+        if (evt != null && evt.type == EventType.KeyDown && evt.keyCode == r.Settings.DebugHotkeyCode) { ToggleDebug("GUI.KeyDown"); evt.Use(); }
+        var color = GUI.color; var background = GUI.backgroundColor; var content = GUI.contentColor; int depth = GUI.depth;
+        try
+        {
+            GUI.depth = -10000; GUI.color = GUI.backgroundColor = GUI.contentColor = Color.white;
+            if (PlayerStore.Instance != null && GUI.Button(new Rect(Screen.width - 170, 12, 160, 32), r.Settings.DebugHotkey + " Debug")) ToggleDebug("screen button");
+            RuntimeMod.Guard("debug GUI", () => { if (r.Settings.Open) r.Settings.Draw(); if (r.Debugger.Open || r.Debugger.Active) r.Debugger.Draw(); });
+        }
+        finally { GUI.color = color; GUI.backgroundColor = background; GUI.contentColor = content; GUI.depth = depth; }
+    }
 }

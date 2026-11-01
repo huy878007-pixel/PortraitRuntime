@@ -42,7 +42,11 @@ public sealed class PortraitDisplay
         if (bound == null || vanilla == null) return;
         applied = RuntimeMod.Current.Assets.Get(pack, path, vanilla, bound);
         bound.sprite = applied;
-        RuntimeMod.Event("debug", "portrait.applied", new { pack = pack.Id, path, sprite = applied.name, renderer = bound.name });
+        var t = bound.transform; var p = t.position; var s = t.lossyScale; var b = bound.bounds; var c = bound.color;
+        RuntimeMod.Event("debug", "portrait.applied", new { pack = pack.Id, path, sprite = applied.name, renderer = bound.name,
+            active = bound.gameObject.activeInHierarchy, bound.enabled, position = new[] { p.x,p.y,p.z }, scale = new[] { s.x,s.y,s.z },
+            bounds = new[] { b.center.x,b.center.y,b.center.z,b.size.x,b.size.y,b.size.z }, color = new[] { c.r,c.g,c.b,c.a },
+            shader = bound.sharedMaterial != null ? bound.sharedMaterial.shader.name : null });
     }
     public void Dialogue(Dialogue dialogue)
     {

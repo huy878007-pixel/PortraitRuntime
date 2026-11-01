@@ -14,7 +14,7 @@ def main():
     native = json.loads((ROOT / 'artifacts/native-contracts.json').read_text(encoding='utf-8'))
     assert verification['passed'] and native['passed'] and not verification['gameRuntimeTested']
     assert not native['scanner']['Refused'] and not native['scanner']['HardFlags']
-    destination = Path(r'C:\Users\Administrator\Desktop\深空内容核心库_0.2.1_双Mod_待游戏验收')
+    destination = Path(r'C:\Users\Administrator\Desktop\深空内容核心库_0.2.2_双Mod_待游戏验收')
     if destination.exists():
         destination = destination.with_name(destination.name + '_' + str(time.time_ns()))
     destination.mkdir()
@@ -30,7 +30,7 @@ def main():
                  'workbench-overview.png', 'workbench-character.png', 'workbench-mobile.png', 'workshop_item.vdf']:
         shutil.copy2(ROOT / 'artifacts' / name, evidence / name)
     test_result = next(line for line in (ROOT / 'artifacts/core-tests.log').read_text(encoding='utf-8').splitlines() if line.startswith('RESULT '))
-    summary = f'''# 深空内容核心库 0.2.1 · 双 Mod · 待游戏验收
+    summary = f'''# 深空内容核心库 0.2.2 · 双 Mod · 待游戏验收
 
 已完成可构建交付与离线验证。游戏内验收尚未完成，游戏窗口由你操作。
 
@@ -61,7 +61,7 @@ def main():
 
 立绘和离场显示、原生选项按钮、交易与库存、真实保存读档、F10 窗口输入和中文字体、30 分钟内存稳定性。静态检查与模拟不能代替这些项目。
 
-F7 打开调试界面，可切换 F8；提供当天全部人物、阶段和剧情配图巡检。默认预览不执行原剧情工厂；真实来访需显式选择并可能改变剧情。巡检期间阻止保存，停止时恢复排队。
+F3 打开调试界面，可切换 F4；提供当天全部人物、阶段和剧情配图巡检。默认预览不执行原剧情工厂；真实来访需显式选择并可能改变剧情。巡检期间阻止保存，停止时恢复排队。
 
 详细 JSONL 日志、F11 诊断、巡检报告保存在游戏持久数据目录的 PortraitRuntime/logs。每会话最多 32 个 4 MiB 日志文件，历史会话保留。请备份旧独立美化版到 Mods 目录外，再安装两份新 Mod；游戏内验证由你操作。
 '''

@@ -257,7 +257,7 @@ public sealed class DebugConsole
     }
     public void Draw()
     {
-        if (Open) window = GUI.Window(7670, window, Window, "深空核心库 · 调试台（F7 / 可改 F8）");
+        if (Open) window = GUI.Window(7670, window, Window, "深空核心库 · 调试台（F3 / 可改 F4）");
         else if (Active)
         {
             hud = new Rect(Math.Max(0, Screen.width - 555), 20, 535, 125);
@@ -298,7 +298,7 @@ public sealed class DebugConsole
         permitReal = GUILayout.Toggle(permitReal, "高级：允许真实来访（会执行原剧情、交易和角色回调，可能改变剧情或结束游戏）");
         if (permitReal && GUILayout.Button("当天全部真实来访（仅新建测试存档；失败条目记日志后继续）")) Request(Registry, true);
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("调试键：" + Runtime.Settings.DebugHotkey + "（点击切换 F7/F8）")) { Runtime.Settings.DebugHotkey = Runtime.Settings.DebugHotkey == "F8" ? "F7" : "F8"; Runtime.Settings.Save(); }
+        if (GUILayout.Button("调试键：" + Runtime.Settings.DebugHotkey + "（点击切换 F3/F4）")) { Runtime.Settings.DebugHotkey = Runtime.Settings.DebugHotkey == "F4" ? "F3" : "F4"; Runtime.Settings.Save(); }
         if (GUILayout.Button("关闭调试台")) Open = false;
         GUILayout.EndHorizontal(); GUI.DragWindow(new Rect(0, 0, 960, 24));
     }

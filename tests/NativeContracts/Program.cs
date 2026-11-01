@@ -76,10 +76,16 @@ static class Contract
         ok &= noDependency && noMarker;
         checks.Add(new { target = "unmarked Mods and Mods without core dependency are not admitted", found = noDependency && noMarker });
         var settings = new PortraitRuntime.Unity.Settings();
-        bool keys = settings.DebugHotkeyCode == UnityEngine.KeyCode.F7;
-        settings.DebugHotkey = "F8"; keys &= settings.DebugHotkeyCode == UnityEngine.KeyCode.F8;
-        settings.DebugHotkey = "invalid"; keys &= settings.DebugHotkeyCode == UnityEngine.KeyCode.F7;
-        ok &= keys; checks.Add(new { target = "debug shortcut defaults F7, supports F8 and invalid fallback", found = keys });
+        bool adjustment = !settings.HasPortraitAdjustment;
+        settings.PortraitX = 1; adjustment &= settings.HasPortraitAdjustment;
+        settings.PortraitX = 0; settings.PortraitScale = 1.2f; adjustment &= settings.HasPortraitAdjustment;
+        settings.PortraitScale = 1; adjustment &= !settings.HasPortraitAdjustment;
+        ok &= adjustment; checks.Add(new { target = "default display settings leave native portrait transforms alone", found = adjustment });
+        bool keys = settings.DebugHotkeyCode == UnityEngine.KeyCode.F3;
+        settings.DebugHotkey = "F4"; keys &= settings.DebugHotkeyCode == UnityEngine.KeyCode.F4;
+        settings.DebugHotkey = "F7"; keys &= settings.DebugHotkeyCode == UnityEngine.KeyCode.F3;
+        settings.DebugHotkey = "invalid"; keys &= settings.DebugHotkeyCode == UnityEngine.KeyCode.F3;
+        ok &= keys; checks.Add(new { target = "debug shortcut defaults F3, supports F4 and migrates old keys", found = keys });
         var result = new { passed = ok && !scan.Refused && !addonScan.Refused, runtimeExecuted = false, checks,
             notExecuted = new[] { "Native dialogue construction requires RenderHandler.current.windowUICanvas in a running Unity scene." },
             scanner = new { scan.Refused, scan.MethodsScanned, scan.Error, scan.Capabilities, scan.HardFlags, findings = scan.FormatFindings(40) },

@@ -15,9 +15,10 @@ public sealed class Settings
     public float NameY { get; set; }
     public int CacheMiB { get; set; } = 256;
     public string Hotkey { get; set; } = "F10";
-    public string DebugHotkey { get; set; } = "F7";
+    public string DebugHotkey { get; set; } = "F3";
     public bool DetailedLogging { get; set; } = true;
-    [JsonIgnore] public KeyCode DebugHotkeyCode => Enum.TryParse(DebugHotkey, true, out KeyCode value) && (value == KeyCode.F7 || value == KeyCode.F8) ? value : KeyCode.F7;
+    [JsonIgnore] public KeyCode DebugHotkeyCode => Enum.TryParse(DebugHotkey, true, out KeyCode value) && (value == KeyCode.F3 || value == KeyCode.F4) ? value : KeyCode.F3;
+    [JsonIgnore] public bool HasPortraitAdjustment => PortraitX != 0 || PortraitY != 0 || PortraitScale != 1;
     [JsonIgnore] public KeyCode HotkeyCode => Enum.TryParse(Hotkey, true, out KeyCode value) ? value : KeyCode.F10;
     [JsonIgnore] public bool Open;
     string path;
@@ -42,6 +43,7 @@ public sealed class Settings
         PortraitX = Clamp(PortraitX, -300, 300, 0); PortraitY = Clamp(PortraitY, -300, 300, 0);
         BubbleX = Clamp(BubbleX, -600, 600, 0); BubbleY = Clamp(BubbleY, -600, 600, 0);
         NameX = Clamp(NameX, -600, 600, 0); NameY = Clamp(NameY, -600, 600, 0);
+        DebugHotkey = DebugHotkeyCode.ToString();
     }
     public void CaptureBubble(DialogUIManager ui)
     {
@@ -64,15 +66,17 @@ public sealed class Settings
         }
         if (!anyOpen && blocker != null) { UnityEngine.Object.Destroy(blocker); blocker = null; }
         var image = RuntimeMod.Current?.Portrait.Renderer ?? StoreClientMono.Instance?.image;
-        var target = image?.transform;
+        var target = image != null ? image.transform : null;
         if (target != portrait)
         {
+            ResetPortrait();
             portrait = target;
-            if (portrait != null) { portraitBase = portrait.localPosition; portraitSize = portrait.localScale; }
         }
-        bool replaced = image?.sprite?.name.StartsWith("PortraitRuntime/", StringComparison.Ordinal) == true;
-        if (portrait != null && replaced)
+        bool replaced = image != null && image.sprite != null && image.sprite.name.StartsWith("PortraitRuntime/", StringComparison.Ordinal);
+        bool moving = StoreClientMono.Instance != null && StoreClientMono.Instance.IsMoving();
+        if (portrait != null && replaced && HasPortraitAdjustment && !moving && image.gameObject.activeInHierarchy)
         {
+            if (!portraitOwned) { portraitBase = portrait.localPosition; portraitSize = portrait.localScale; }
             portrait.localPosition = portraitBase + new Vector3(PortraitX, PortraitY);
             portrait.localScale = portraitSize * PortraitScale;
             portraitOwned = true;
@@ -116,8 +120,8 @@ public sealed class Settings
     public void Save() { if (path != null) File.WriteAllText(path, JsonConvert.SerializeObject(this, Formatting.Indented)); }
     void Window(int id)
     {
-        GUILayout.Label("F7 调试台 · F10 设置 · F11 诊断");
-        DebugHotkey = GUILayout.Toggle(DebugHotkey == "F8", "使用 F8 打开调试台（默认 F7）") ? "F8" : "F7";
+        GUILayout.Label("F3 调试台 · F10 设置 · F11 诊断");
+        DebugHotkey = GUILayout.Toggle(DebugHotkey == "F4", "使用 F4 打开调试台（默认 F3）") ? "F4" : "F3";
         Crisp = GUILayout.Toggle(Crisp, "高清立绘");
         void Slider(string label, ref float value, float min, float max) { GUILayout.Label(label + " " + value.ToString("0.00")); value = GUILayout.HorizontalSlider(value, min, max); }
         float s = PortraitScale, x = PortraitX, y = PortraitY, bx = BubbleX, by = BubbleY, nx = NameX, ny = NameY;
