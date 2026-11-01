@@ -14,7 +14,7 @@ def main():
     native = json.loads((ROOT / 'artifacts/native-contracts.json').read_text(encoding='utf-8'))
     assert verification['passed'] and native['passed'] and not verification['gameRuntimeTested']
     assert not native['scanner']['Refused'] and not native['scanner']['HardFlags']
-    destination = Path(r'C:\Users\Administrator\Desktop\深空内容核心库_0.2.0_双Mod_待游戏验收')
+    destination = Path(r'C:\Users\Administrator\Desktop\深空内容核心库_0.2.1_双Mod_待游戏验收')
     if destination.exists():
         destination = destination.with_name(destination.name + '_' + str(time.time_ns()))
     destination.mkdir()
@@ -30,7 +30,7 @@ def main():
                  'workbench-overview.png', 'workbench-character.png', 'workbench-mobile.png', 'workshop_item.vdf']:
         shutil.copy2(ROOT / 'artifacts' / name, evidence / name)
     test_result = next(line for line in (ROOT / 'artifacts/core-tests.log').read_text(encoding='utf-8').splitlines() if line.startswith('RESULT '))
-    summary = f'''# 深空内容核心库 0.2.0 · 双 Mod · 待游戏验收
+    summary = f'''# 深空内容核心库 0.2.1 · 双 Mod · 待游戏验收
 
 已完成可构建交付与离线验证。游戏内验收尚未完成，游戏窗口由你操作。
 

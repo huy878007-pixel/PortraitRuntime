@@ -28,6 +28,7 @@ public sealed class RuntimeMod : IMod
     ISet<string> dialogueKeys;
     public readonly DebugConsole Debugger = new();
     public TraceLog Trace { get; private set; }
+    static readonly HashSet<string> discoveredContent = new(StringComparer.Ordinal);
     static readonly Dictionary<string, (DateTime Last, int Count)> repeatedErrors = new();
     readonly Dictionary<string, Func<StoreClient>> replacedFactories = new();
     readonly Dictionary<string, Func<StoreClient>> actorFactories = new();
@@ -63,7 +64,7 @@ public sealed class RuntimeMod : IMod
         Current = this;
         Trace?.Dispose(); Trace = new TraceLog(Path.Combine(Application.persistentDataPath, "PortraitRuntime", "logs"));
         if (Trace.Failure != null) Debug.LogWarning("[PortraitRuntime] File logging unavailable: " + Trace.Failure);
-        Event("info", "runtime.init", new { runtime = "0.2.0", Root, manifest.ID });
+        Event("info", "runtime.init", new { runtime = "0.2.1", Root, manifest.ID });
         using var sha = SHA256.Create();
         using var stream = File.OpenRead(typeof(StoreClient).Assembly.Location);
         var hash = BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
@@ -74,6 +75,7 @@ public sealed class RuntimeMod : IMod
         Trace.Detailed = Settings.DetailedLogging;
         var keysPath = Path.Combine(Root, "catalogs", "dialogue_keys.json");
         dialogueKeys = File.Exists(keysPath) ? JsonConvert.DeserializeObject<HashSet<string>>(File.ReadAllText(keysPath)) : null;
+        RefreshContentSources();
         Catalog = ReadCatalog();
         Assets.Budget = Settings.CacheMiB * 1024L * 1024;
         harmony = new Harmony(ModId + ".runtime");
@@ -141,6 +143,20 @@ public sealed class RuntimeMod : IMod
         itemFactories.Clear();
     }
     public static bool HasLegacyConflict() => ModLoader.Mods.Any(x => x.Manifest?.ID == "player.launchgiftportraits" && x.IsEnabled && !x.Manifest.Prerequisites.Contains(ModId));
+    public static void RefreshContentSources()
+    {
+        var active = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var mod in ModLoader.Mods.ToArray())
+        {
+            if (!mod.IsEnabled || mod.Manifest == null || !mod.Manifest.Prerequisites.Contains(ModId) || string.IsNullOrEmpty(mod.FolderPath)) continue;
+            string packs = Path.Combine(mod.FolderPath, "packs");
+            if (!File.Exists(Path.Combine(mod.FolderPath, "portrait-content.marker")) || !System.IO.Directory.Exists(packs)) continue;
+            active.Add(mod.Manifest.ID);
+            ContentSources.Register(mod.Manifest.ID, packs);
+        }
+        foreach (string id in discoveredContent.Where(x => !active.Contains(x)).ToArray()) ContentSources.Unregister(id);
+        discoveredContent.Clear(); discoveredContent.UnionWith(active);
+    }
     void StoryDiagnostic(string name, object data) => Event(name.Contains("pending") ? "error" : "debug", name, data);
     Catalog ReadCatalog()
     {
@@ -168,6 +184,7 @@ public sealed class RuntimeMod : IMod
     void Loaded() => Guard("load", () =>
     {
         Debugger.CancelImmediately();
+        RefreshContentSources();
         RegisterActors();
         foreach (var directory in UObj.FindObjectsOfType<ModItemDirectory>()) RegisterItems(directory);
         Host.CheckDependencies();
@@ -226,7 +243,7 @@ public sealed class RuntimeMod : IMod
     public void Diagnostics()
     {
         var blueprint = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
-        var value = new { gameHash = SupportedHash, runtime = "0.2.0", sources = ContentSources.Snapshot, debug = Debugger.Summary(), packs = Catalog.Packs.Select(x => new { x.Id, x.Priority }), conflicts = Catalog.Conflicts,
+        var value = new { gameHash = SupportedHash, runtime = "0.2.1", sources = ContentSources.Snapshot, debug = Debugger.Summary(), packs = Catalog.Packs.Select(x => new { x.Id, x.Priority }), conflicts = Catalog.Conflicts,
             client = blueprint == null ? null : new { blueprint.identifier, blueprint.spriteName, factory = Origins.TryGetValue(blueprint, out var f) ? f.Factory : "" },
             cacheBytes = Assets.Bytes, cacheEntries = Assets.Count, traceSession = Trace?.Session, logs = Trace?.Files, droppedLogs = Trace?.Dropped, logFailure = Trace?.Failure,
             timestamp = DateTime.UtcNow.ToString("O"), stage = "runtime-user-initiated" };
@@ -243,6 +260,7 @@ public sealed class RuntimePump : MonoBehaviour
         RuntimeMod.Guard("tick", () =>
         {
             if (Time.frameCount % 120 == 0 && RuntimeMod.HasLegacyConflict()) { RuntimeMod.Log("Old standalone beauty Mod conflicts with runtime. Install the dependent content edition."); r.OnDisable(); return; }
+            if (Time.frameCount % 120 == 0) RuntimeMod.RefreshContentSources();
             if (Input.GetKeyDown(r.Settings.DebugHotkeyCode)) r.Debugger.Open = !r.Debugger.Open;
             if (Input.GetKeyDown(r.Settings.HotkeyCode)) r.Settings.Open = !r.Settings.Open;
             if (Input.GetKeyDown(KeyCode.F11)) r.Diagnostics();

@@ -72,18 +72,19 @@ def main():
     (runtime / 'catalogs').mkdir()
     for name in ['dialogue_keys.json', 'special_targets.json', 'debug_visits.json']:
         shutil.copy2(ROOT / 'catalogs' / name, runtime / 'catalogs' / name)
-    manifest(runtime, 'player.portraitruntime', '深空内容核心库 · F7调试台', '0.2.0',
+    manifest(runtime, 'player.portraitruntime', '深空内容核心库 · F7调试台', '0.2.1',
              '独立内容运行时，无人物美术。F7调试台（可改F8），当天人物巡览、剧情配图巡检、详细日志；F10显示设置，F11诊断。',
              ['PortraitRuntime.Core.dll', 'PortraitRuntime.Unity.dll'], capabilities=['files', 'reflection-external'])
     bridge = ROOT / 'src/LaunchGiftPortraits.Content/bin/Release/netstandard2.1/LaunchGiftPortraits.Content.dll'
     shutil.copy2(bridge, beauty / bridge.name)
+    (beauty / 'portrait-content.marker').write_text('portrait-content/1\n', encoding='utf-8')
     shutil.copytree(ROOT / 'packs', beauty / 'packs')
     for sample in ['demo', 'icon-examples']:
         path = beauty / 'packs' / sample / 'pack.json'
         data = json.loads(path.read_text(encoding='utf-8'))
         data['enabled'] = False
         path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
-    manifest(beauty, 'player.launchgiftportraits', '深空娘化 · 人物美化内容包', '2.0.0',
+    manifest(beauty, 'player.launchgiftportraits', '深空娘化 · 人物美化内容包', '2.0.1',
              '独立人物美化Mod：17位角色、669条剧情配图、11项特殊资源。依赖深空内容核心库，不包含旧版全局精灵替换逻辑。',
              [bridge.name], dependencies=['player.portraitruntime'], capabilities=['files'])
     for destination in [runtime, beauty]:
@@ -94,12 +95,12 @@ def main():
     files = []
     for mod in [runtime, beauty]:
         files.extend({'path': p.relative_to(staging).as_posix(), 'bytes': p.stat().st_size, 'sha256': sha(p)} for p in sorted(mod.rglob('*')) if p.is_file())
-    report = {'version': '0.2.0', 'packs': reports, 'files': files, 'mods': ['player.portraitruntime', 'player.launchgiftportraits'],
+    report = {'version': '0.2.1', 'packs': reports, 'files': files, 'mods': ['player.portraitruntime', 'player.launchgiftportraits'],
               'runtimeHasArtwork': False, 'beautyDependsOnRuntime': True, 'installed': False, 'gameRuntimeTested': False}
     (ROOT / 'artifacts/package.json').write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     for mod in [runtime, beauty]:
         promote(mod, ROOT / 'dist' / mod.name)
-        shutil.make_archive(str(ROOT / 'dist' / (mod.name + '-0.2.0')), 'zip', ROOT / 'dist', mod.name)
+        shutil.make_archive(str(ROOT / 'dist' / (mod.name + '-0.2.1')), 'zip', ROOT / 'dist', mod.name)
     shutil.copytree(cli.parent, ROOT / 'dist/tools', dirs_exist_ok=True)
     shutil.copytree(ROOT / 'workbench', ROOT / 'dist/workbench', dirs_exist_ok=True)
     shutil.copytree(ROOT / 'docs', ROOT / 'dist/docs', dirs_exist_ok=True)
