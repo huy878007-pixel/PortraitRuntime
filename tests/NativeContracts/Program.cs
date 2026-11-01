@@ -33,6 +33,17 @@ static class Contract
         Method(typeof(StoreUIManager), "OnClientStartLeaving");
         Method(typeof(CustomUIManager), "CreateWindow");
         Method(typeof(CustomUIManager), "GetLayerRoot");
+        // The game's own Mod settings window is how the debug console is switched on.
+        bool settingsApi = typeof(ModConfig).GetMethod("For", new[] { typeof(string) }) != null
+            && typeof(ConfigEntry<bool>).GetProperty("Value") != null;
+        ok &= settingsApi;
+        checks.Add(new { target = "Mod settings API (ModConfig.For, ConfigEntry<bool>.Value)", found = settingsApi });
+        bool debugOff = !new PortraitRuntime.Unity.RuntimeMod().DebugEnabled;
+        ok &= debugOff;
+        checks.Add(new { target = "debug console is off unless the Mod setting turns it on", found = debugOff });
+        bool quietLog = !new PortraitRuntime.Unity.RuntimeMod().DetailedLogging;
+        ok &= quietLog;
+        checks.Add(new { target = "detailed logging is off unless the Mod setting turns it on", found = quietLog });
         Method(typeof(LocHelper), "Get");
         Method(typeof(Dialogue), "SetText", new[] { typeof(string), typeof(RichTextBuilder) });
         Method(typeof(Dialogue), "SetDummy"); Method(typeof(Dialogue), "SetNextDialogue");

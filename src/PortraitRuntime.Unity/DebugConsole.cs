@@ -312,9 +312,7 @@ public sealed class DebugConsole
         if (GUILayout.Button("全部随机池精灵")) Request(Sprites());
         if (GUILayout.Button("导出诊断与巡览报告")) { Runtime.Diagnostics(); Export(); }
         GUILayout.EndHorizontal();
-        bool detailed = GUILayout.Toggle(Runtime.Settings.DetailedLogging, "详细日志（人物身份、台词 key、资源命中、剧情动作、完整异常堆栈）");
-        if (detailed != Runtime.Settings.DetailedLogging) { Runtime.Settings.DetailedLogging = detailed; Runtime.Settings.Save(); }
-        if (Runtime.Trace != null) Runtime.Trace.Detailed = Runtime.Settings.DetailedLogging;
+        GUILayout.Label("详细日志由 Mod 设置里的「记录详细日志」控制；此处只显示状态：" + (Runtime.DetailedLogging ? "已开启" : "已关闭"));
         GUILayout.Label("日志目录：" + Runtime.Trace?.DirectoryPath + " · 丢弃 " + (Runtime.Trace?.Dropped ?? 0));
         automatic = GUILayout.Toggle(automatic, "自动巡览：进场后停留 4 秒，再下一位");
         if (Active) Controls();

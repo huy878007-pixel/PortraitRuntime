@@ -13,7 +13,7 @@ from xml.etree.ElementTree import Element, SubElement, ElementTree
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-CORE_VERSION = '0.3.7'
+CORE_VERSION = '0.3.9'
 BEAUTY_VERSION = '2.1.7'
 # The beauty content lives in its own repository; clone it here (gitignored) to package both Mods.
 BEAUTY_ROOT = Path(os.environ.get('PORTRAIT_BEAUTY_DIR', ROOT / 'beauty'))

@@ -30,6 +30,14 @@ public sealed class RuntimeMod : IMod
     ISet<string> dialogueKeys;
     public readonly DebugConsole Debugger = new();
     public TraceLog Trace { get; private set; }
+    ConfigEntry<bool> debugEntry, logEntry;
+    /// <summary>
+    /// Debug console is opt-in and off by default. It is switched on from the game's own Mod
+    /// settings window (ModConfig), not from a hotkey nobody asked for.
+    /// </summary>
+    public bool DebugEnabled => debugEntry != null && debugEntry.Value;
+    /// <summary>Verbose logging is opt-in too: a normal install only records info and above.</summary>
+    public bool DetailedLogging => logEntry != null && logEntry.Value;
     static readonly HashSet<string> discoveredContent = new(StringComparer.Ordinal);
     static readonly Dictionary<string, (DateTime Last, int Count)> repeatedErrors = new();
     readonly Dictionary<string, Func<StoreClient>> replacedFactories = new();
@@ -86,8 +94,9 @@ public sealed class RuntimeMod : IMod
         if (hash != SupportedHash) { Log("Unsupported game assembly " + hash + "; runtime disabled"); return; }
         if (HasLegacyConflict())
         { Log("Legacy portrait mod enabled; disable it before enabling PortraitRuntime. No hooks installed."); return; }
+        DefineSettings();
         Settings.Load(Path.Combine(Root, "runtime.json"), Path.Combine(Root, "ui.json"));
-        Trace.Detailed = Settings.DetailedLogging;
+        Trace.Detailed = DetailedLogging;
         var keysPath = Path.Combine(Root, "catalogs", "dialogue_keys.json");
         dialogueKeys = File.Exists(keysPath) ? JsonConvert.DeserializeObject<HashSet<string>>(File.ReadAllText(keysPath)) : null;
         RefreshContentSources();
@@ -116,7 +125,7 @@ public sealed class RuntimeMod : IMod
         UnityEngine.SceneManagement.SceneManager.sceneLoaded += SceneLoaded;
         RegisterActors();
         foreach (var directory in UObj.FindObjectsOfType<ModItemDirectory>()) RegisterItems(directory);
-        Log("Enabled; F3 debug console, F11 diagnostics. Display settings come from an enabled content Mod.");
+        Log("Enabled; F11 diagnostics. F3 debug console is " + (DebugEnabled ? "on" : "off (enable it in the Mod settings)") + ". Display settings come from an enabled content Mod.");
         PortraitApi.Raise(PortraitApi.Enabled, new { version = PortraitApi.Version, packs = Catalog.Packs.Select(x => x.Id).ToArray() });
     }
     public void OnDisable()
@@ -157,6 +166,25 @@ public sealed class RuntimeMod : IMod
         itemFactories.Clear();
     }
     public static bool HasLegacyConflict() => ModLoader.Mods.Any(x => x.Manifest?.ID == "player.launchgiftportraits" && x.IsEnabled && !x.Manifest.Prerequisites.Contains(ModId));
+    /// <summary>Publish the runtime's own switches into the game's Mod settings window.</summary>
+    void DefineSettings()
+    {
+        try
+        {
+            var config = ModConfig.For(ModId);
+            debugEntry = config.Define("debugConsole", false, "调试",
+                () => "启用 F3 调试台",
+                () => "打开人物巡览、剧情配图巡检与调试界面。发布版默认关闭；打开后按 F3（可在调试台里改成 F4）呼出。");
+            logEntry = config.Define("detailedLogging", false, "日志",
+                () => "记录详细日志",
+                () => "记录人物身份、台词 key、资源命中与完整异常堆栈。默认关闭，只记录 info 及以上；排查问题时再打开。");
+        }
+        catch (Exception e)
+        {
+            // Without the settings window the console stays off: opt-in has to be an explicit act.
+            Log("Mod settings unavailable; F3 debug console stays disabled: " + e.Message);
+        }
+    }
     public static void RefreshContentSources()
     {
         var active = new HashSet<string>(StringComparer.Ordinal);
@@ -279,7 +307,7 @@ public sealed class RuntimePump : MonoBehaviour
     void ToggleDebug(string source)
     {
         var r = RuntimeMod.Current;
-        if (r == null || !r.Enabled || lastToggleFrame == Time.frameCount) return;
+        if (r == null || !r.Enabled || !r.DebugEnabled || lastToggleFrame == Time.frameCount) return;
         lastToggleFrame = Time.frameCount;
         r.Debugger.Open = !r.Debugger.Open;
         RuntimeMod.Event("info", "debug.toggle", new { source, r.Settings.DebugHotkey, open = r.Debugger.Open });
@@ -297,6 +325,10 @@ public sealed class RuntimePump : MonoBehaviour
             if (Input.GetKeyDown(r.Settings.DebugHotkeyCode)) ToggleDebug("Input.GetKeyDown");
             if (Input.GetKeyDown(KeyCode.F11)) r.Diagnostics();
             if (Input.GetKeyDown(KeyCode.Escape)) r.Debugger.Open = false;
+            // Both switches live in the Mod settings window, so follow them live instead of at load.
+            if (r.Trace != null && r.Trace.Detailed != r.DetailedLogging) r.Trace.Detailed = r.DetailedLogging;
+            // Turning the switch off has to release a running tour, not just hide the window.
+            if (!r.DebugEnabled && (r.Debugger.Open || r.Debugger.Active)) { r.Debugger.Open = false; r.Debugger.CancelImmediately(); }
             r.Debugger.Tick();
         });
     }
@@ -305,13 +337,13 @@ public sealed class RuntimePump : MonoBehaviour
         var r = RuntimeMod.Current; if (r == null || !r.Enabled) return;
         if (firstGui) { firstGui = false; RuntimeMod.Event("info", "pump.gui.started"); }
         var evt = UnityEngine.Event.current;
-        if (evt != null && evt.type == EventType.KeyDown && evt.keyCode == r.Settings.DebugHotkeyCode) { ToggleDebug("GUI.KeyDown"); evt.Use(); }
+        if (r.DebugEnabled && evt != null && evt.type == EventType.KeyDown && evt.keyCode == r.Settings.DebugHotkeyCode) { ToggleDebug("GUI.KeyDown"); evt.Use(); }
         var color = GUI.color; var background = GUI.backgroundColor; var content = GUI.contentColor; int depth = GUI.depth;
         try
         {
             GUI.depth = -10000; GUI.color = GUI.backgroundColor = GUI.contentColor = Color.white;
-            if (PlayerStore.Instance != null && GUI.Button(new Rect(Screen.width - 170, 12, 160, 32), r.Settings.DebugHotkey + " Debug")) ToggleDebug("screen button");
-            RuntimeMod.Guard("debug GUI", () => { if (r.Debugger.Open || r.Debugger.Active) r.Debugger.Draw(); });
+            if (r.DebugEnabled && PlayerStore.Instance != null && GUI.Button(new Rect(Screen.width - 170, 12, 160, 32), r.Settings.DebugHotkey + " Debug")) ToggleDebug("screen button");
+            RuntimeMod.Guard("debug GUI", () => { if (r.DebugEnabled && (r.Debugger.Open || r.Debugger.Active)) r.Debugger.Draw(); });
         }
         finally { GUI.color = color; GUI.backgroundColor = background; GUI.contentColor = content; GUI.depth = depth; }
     }

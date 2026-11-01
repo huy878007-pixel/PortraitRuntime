@@ -11,7 +11,6 @@ public sealed class Settings
 {
     public int CacheMiB { get; set; } = 256;
     public string DebugHotkey { get; set; } = "F3";
-    public bool DetailedLogging { get; set; } = true;
     [JsonIgnore] public KeyCode DebugHotkeyCode => Enum.TryParse(DebugHotkey, true, out KeyCode value) && (value == KeyCode.F3 || value == KeyCode.F4) ? value : KeyCode.F3;
     string path;
 
