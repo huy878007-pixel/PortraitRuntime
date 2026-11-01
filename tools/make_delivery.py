@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import time
 from pathlib import Path
@@ -17,7 +18,8 @@ def main():
     assert not native['scanner']['Refused'] and not native['scanner']['HardFlags']
     version = package['version']
     beauty_version = package['beautyVersion']
-    destination = Path(rf'C:\Users\Administrator\Desktop\深空内容核心库_{version}_双Mod_待游戏验收')
+    # Home Desktop by default; set PORTRAIT_DELIVERY_DIR to put the drop somewhere else.
+    destination = Path(os.environ.get('PORTRAIT_DELIVERY_DIR', str(Path.home() / 'Desktop'))) / f'深空内容核心库_{version}_双Mod_待游戏验收'
     if destination.exists():
         destination = destination.with_name(destination.name + '_' + str(time.time_ns()))
     destination.mkdir()

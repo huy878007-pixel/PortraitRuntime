@@ -34,6 +34,17 @@ python tools/verify_all.py
 
 输入素材和审计目录已存在时，可用 `python tools/migrate.py` 重建核心包与示范，`python tools/build_workbench.py` 重建工作台数据，`python tools/build_icon_examples.py` 重建五件图标示范。迁移只读取原始素材。
 
+这些重建脚本不从仓库读素材，路径由环境变量给出：
+
+| 变量 | 用途 | 默认 |
+|---|---|---|
+| `PORTRAIT_SOURCE_DIR` | 反编译审计与旧版发布所在的素材目录 | `~/Desktop` |
+| `PORTRAIT_SPRITE_DUMP` | 解包得到的贴图目录 | `sprite-dump/sprites` |
+| `PORTRAIT_DELIVERY_DIR` | 交付包输出位置 | `~/Desktop` |
+
+`verify_all.py` 不需要这些变量，也不依赖游戏本体。
+
+
 也可双击 `一键构建与测试.cmd`。它不修改 PowerShell 执行策略；本机有签名策略时优先使用 Python/批处理入口。
 
 ## 安装与验收

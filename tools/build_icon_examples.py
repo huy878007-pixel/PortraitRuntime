@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from pathlib import Path
 
 from PIL import Image, ImageDraw
@@ -13,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     registrations = json.loads((ROOT / 'catalogs/item_registrations.json').read_text(encoding='utf-8'))
     sprites = {x['name']: x for x in json.loads((ROOT / 'catalogs/sprites.json').read_text(encoding='utf-8'))}
-    originals = list(Path(r'C:\Users\Administrator\Desktop\深空解包_2026-11-01\sprites').rglob('*.png'))
+    originals = list(Path(os.environ.get('PORTRAIT_SPRITE_DUMP', 'sprite-dump/sprites')).rglob('*.png'))
     folder = ROOT / 'packs/icon-examples'
     folder.mkdir(parents=True, exist_ok=True)
     items = {}

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 from collections import defaultdict
 from pathlib import Path
@@ -26,7 +27,7 @@ def main():
                            'identifiers': method['identifier_literals'],
                            'name': next((loc[x] for x in method['display_name_keys'] if x in loc), entry['registration_id'])})
     sprites = {x['name']: x for x in read('sprites.json')}
-    original_images = list(Path(r'C:\Users\Administrator\Desktop\深空解包_2026-11-01\sprites').rglob('*.png'))
+    original_images = list(Path(os.environ.get('PORTRAIT_SPRITE_DUMP', 'sprite-dump/sprites')).rglob('*.png'))
     items = []
     for entry in read('item_registrations.json'):
         if entry['registry_kind'] != 'GameItem':

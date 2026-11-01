@@ -2,13 +2,15 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 from pathlib import Path
 
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
-DESKTOP = Path(r'C:\Users\Administrator\Desktop')
+# Source material lives outside the repository; point these at your own dump and release folders.
+DESKTOP = Path(os.environ.get('PORTRAIT_SOURCE_DIR', str(Path.home() / 'Desktop')))
 AUDIT = Path((DESKTOP / '深空解包_2026-11-01/最新审计目录.txt').read_text(encoding='utf-8-sig').strip())
 RELEASE = DESKTOP / '深空娘化_剧情立绘Mod/Mod发布'
 ART = DESKTOP / '深空当铺人物美化/12_正式版移植/projects/LaunchGiftPortraits_1.2/Resources'
