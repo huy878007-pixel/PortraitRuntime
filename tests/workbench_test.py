@@ -74,6 +74,7 @@ def main():
         browser.close()
     with zipfile.ZipFile(output) as archive:
         assert archive.testzip() is None
+        assert all(info.date_time[:3] == (1980, 1, 1) for info in archive.infolist())
         data = json.loads(archive.read('pack.json'))
         assert data['items']['mypack.signal']['create']
         assert data['stories']['first']['nodes']['start']['choices'][0]['next'] == 'accept'
