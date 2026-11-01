@@ -30,7 +30,8 @@ def main():
     evidence = destination / '验证报告'
     evidence.mkdir()
     for name in ['verification.json', 'native-contracts.json', 'package.json', 'core-tests.log', 'workbench-test.json',
-                 'workbench-overview.png', 'workbench-character.png', 'workbench-mobile.png', 'workshop_item.vdf']:
+                 'workbench-overview.png', 'workbench-character.png', 'workbench-mobile.png', 'workshop_item.vdf',
+                 'offline-audit.html', 'offline-audit.json']:
         shutil.copy2(ROOT / 'artifacts' / name, evidence / name)
     test_result = next(line for line in (ROOT / 'artifacts/core-tests.log').read_text(encoding='utf-8').splitlines() if line.startswith('RESULT '))
     summary = f'''# 深空内容核心库 {version} · 双 Mod · 待游戏验收

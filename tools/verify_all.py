@@ -52,6 +52,8 @@ def main():
     run('simulate-refusal', cli + ['simulate', 'packs/demo', 'demo.courier', str(refusal), '2', '1'])
     run('simulate-refused-return-rejected', cli + ['simulate', 'packs/demo', 'demo.return', str(refusal), '3', '0'], expected=1)
     run('package', ['python', 'tools/build_pack.py'])
+    run('offline-audit', cli + ['audit', 'packs', 'catalogs', str(ART / 'offline-audit.json')])
+    run('offline-audit-sheet', ['python', 'tools/build_audit_sheet.py'])
     run('native-contracts', ['dotnet', 'run', '--project', 'tests/NativeContracts', '-c', 'Release', '--', 'dist/player.portraitruntime'])
     run('publish-descriptor', ['python', 'tools/publish.py'])
     report = {'passed': True, 'gameAssemblySha256': expected_hash, 'gameLaunched': False, 'gameRuntimeTested': False, 'steps': records,
