@@ -27,6 +27,11 @@ public static class Hooks
         Patch(typeof(StoreUIManager), "OnNextClientArrived", postfix: nameof(Arrival));
         Patch(typeof(StoreClientMono), "OnLeft", postfix: nameof(Left));
         Patch(typeof(StoreUIManager), "RunMorningDialogue", prefix: nameof(Morning));
+        // Outside the counter the game builds the doctor directly and writes the renderer itself,
+        // so the normal arrival path never runs for it.
+        Patch(typeof(MapUIManager), "ActivateClientOutsideStore", postfix: nameof(Outside));
+        Patch(typeof(StoreClientMono), "StartLeavingStore", prefix: nameof(LeavingLeft));
+        Patch(typeof(StoreClientMono), "StartLeavingStoreRight", prefix: nameof(LeavingRight));
         Patch(typeof(DialogUIManager), "DisplayClientText", postfix: nameof(Display), arguments: new[] { typeof(Dialogue) });
         Patch(typeof(Dialogue), "SetText", postfix: nameof(SetText), arguments: new[] { typeof(string), typeof(string) });
         Patch(typeof(Dialogue), "SetText", postfix: nameof(SetRichText), arguments: new[] { typeof(string), typeof(RichTextBuilder) });
@@ -41,7 +46,6 @@ public static class Hooks
         Patch(typeof(GeneralHelper), "SetItemOwned", postfix: nameof(Owned));
         Patch(typeof(RenderHandler), "LoadFromFile", postfix: nameof(Special));
         Patch(typeof(SpriteDict), "GetSprite", postfix: nameof(Special));
-        foreach (var method in new[] { "Start", "SetNormalMode", "SetShootingMode" }) Patch(typeof(DialogUIManager), method, postfix: nameof(Bubble));
     }
     static void Factory(MethodBase __originalMethod, StoreClient __result)
     {
@@ -51,25 +55,63 @@ public static class Hooks
         r.Origins.Add(__result, new RuntimeMod.FactoryTag { Factory = __originalMethod.DeclaringType.Name + "." + __originalMethod.Name });
         RuntimeMod.Event("debug", "client.created", new { factory = __originalMethod.DeclaringType.Name + "." + __originalMethod.Name, __result.identifier, __result.spriteName, __result.displayName });
     }
-    static void BeforeNext() { if (Active) { RuntimeMod.Current.Portrait.Restore(); RuntimeMod.Current.Settings.ResetPortrait(); } }
+    static void BeforeNext()
+    {
+        if (!Active) return;
+        RuntimeMod.Current.Portrait.Restore();
+        PortraitApi.Raise(PortraitApi.BeforeArrival, new { day = StoreStation.Instance?.dayCounter });
+    }
     static bool SaveAllowed() { if (Active && RuntimeMod.Current.Debugger.BlocksSave) { RuntimeMod.Event("warning", "debug.save.suspended"); return false; } return true; }
     static bool PreviewStatsAllowed(StoreClient __0) => !Active || !RuntimeMod.Current.Debugger.IsSynthetic(__0);
     static bool PreviewSideEffectAllowed() => !Active || !RuntimeMod.Current.Debugger.Preview;
     static void Arrival(MethodBase __originalMethod)
-    { if (Active) RuntimeMod.Guard("arrival", () => { RuntimeMod.Current.Portrait.Arrival(); if (__originalMethod.DeclaringType == typeof(StoreUIManager)) RuntimeMod.Current.Debugger.Arrived(); }); }
+    {
+        if (!Active) return;
+        RuntimeMod.Guard("arrival", () =>
+        {
+            var runtime = RuntimeMod.Current;
+            var client = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
+            var renderer = StoreUIManager.Instance?.clientGameObject?.image ?? StoreClientMono.Instance?.image;
+            // A content Mod decides what to draw; the runtime only tracks the renderer and announces context.
+            if (client != null && runtime.Portrait.Bind(renderer))
+                PortraitApi.Raise(PortraitApi.Arrival, RuntimeMod.Context(client, renderer));
+            if (__originalMethod.DeclaringType == typeof(StoreUIManager)) runtime.Debugger.Arrived();
+        });
+    }
+    static void Outside()
+    {
+        if (!Active) return;
+        RuntimeMod.Guard("outside portrait", () =>
+        {
+            var runtime = RuntimeMod.Current;
+            var client = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
+            var renderer = StoreClientMono.Instance?.image;
+            if (client != null && runtime.Portrait.Bind(renderer))
+                PortraitApi.Raise(PortraitApi.OutsideStore, RuntimeMod.Context(client, renderer));
+        });
+    }
+    static void LeavingLeft(StoreClientMono __instance) => Leaving("left", __instance);
+    static void LeavingRight(StoreClientMono __instance) => Leaving("right", __instance);
+    static void Leaving(string direction, StoreClientMono instance)
+    {
+        if (!Active) return;
+        var client = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
+        var context = RuntimeMod.Context(client, instance != null ? instance.image : null);
+        PortraitApi.Raise(PortraitApi.Leaving, new { direction, context });
+    }
     static void Left(StoreClientMono __instance)
     {
         if (!Active) return;
-        if (RuntimeMod.Current.Portrait.Renderer == __instance.image) { RuntimeMod.Current.Portrait.Restore(); RuntimeMod.Current.Settings.ResetPortrait(); }
+        if (RuntimeMod.Current.Portrait.Renderer == __instance.image) RuntimeMod.Current.Portrait.Restore();
         RuntimeMod.Current.Debugger.Left();
+        PortraitApi.Raise(PortraitApi.Left, new { renderer = __instance.image != null ? __instance.image.name : null });
     }
     static void Morning()
     {
         if (Active) RuntimeMod.Guard("morning portrait", () =>
         {
             RuntimeMod.Current.Portrait.Restore();
-            RuntimeMod.Current.Settings.ResetPortrait();
-            RuntimeMod.Current.Portrait.Arrival(StoreUIManager.Instance.clientGameObject.image);
+            PortraitApi.Raise(PortraitApi.BeforeArrival, new { morning = true });
         });
     }
     static void Display(Dialogue dialogue)
@@ -77,12 +119,11 @@ public static class Hooks
         if (Active) RuntimeMod.Guard("dialogue", () =>
         {
             var r = RuntimeMod.Current; r.DialogueTags.TryGetValue(dialogue, out var tag);
-            RuntimeMod.Event("debug", "dialogue.display", new { key = tag?.Key, tracked = tag != null, identity = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint()?.identifier,
+            var blueprint = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
+            RuntimeMod.Event("debug", "dialogue.display", new { key = tag?.Key, tracked = tag != null, identity = blueprint?.identifier,
                 text = dialogue?.plainText?.Substring(0, Math.Min(512, dialogue.plainText.Length)) });
-            r.Portrait.Dialogue(dialogue);
-        });
+            PortraitApi.Raise(PortraitApi.Dialogue, new { key = tag?.Key, identity = blueprint?.identifier, spriteKey = blueprint?.spriteName, factory = blueprint != null && r.Origins.TryGetValue(blueprint, out var origin) ? origin.Factory : null });        });
     }
-    static void Bubble(DialogUIManager __instance) { if (Active) RuntimeMod.Current.Settings.CaptureBubble(__instance); }
     static void Localized(string table, string key, ref string __result)
     {
         if (!Active || __result == null || key == null) return;

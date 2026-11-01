@@ -147,7 +147,21 @@ Test("approved previews keep their character and image", () =>
         var c = Visit(pair.Key);
         Check(catalog.Character(c.Identity, c.Factory)?.Id == pair.Value.Item1, pair.Key + " -> " + catalog.Character(c.Identity, c.Factory)?.Id);
         Check(catalog.CharacterAsset(c.Identity, c.Factory, c.SpriteKey)?.Value == pair.Value.Item2, pair.Key + " image -> " + catalog.CharacterAsset(c.Identity, c.Factory, c.SpriteKey)?.Value);
+        var resolved = SpriteLookup.Resolve(catalog, c.Identity, c.Factory, c.SpriteKey, null);
+        Check(resolved.Ok && resolved.Pack == "core" && resolved.Path == pair.Value.Item2 && resolved.Character == pair.Value.Item1, pair.Key + " bridge -> " + resolved.Path);
     }
+});
+Test("the content bridge resolves exactly what the preview applies", () =>
+{
+    var catalog = new Catalog(); catalog.Add(ReadPack("core"));
+    foreach (var c in visiting)
+    {
+        var preview = SpriteLookup.Resolve(catalog, c.Identity, c.Factory, c.SpriteKey, null);
+        if (preview.Ok) Check(preview.Path != null && !preview.Path.Contains(".."), c.Id + " escaped the pack");
+        else Check(preview.Reason != null, c.Id + " failed without a reason");
+    }
+    var anonymous = SpriteLookup.Resolve(catalog, "scavGenericFoodSeller", "StoreClientListSupplier.CreateScavFoodSeller", null, null);
+    Check(!anonymous.Ok && anonymous.Reason == "no-mapping", "anonymous seller must stay unmapped");
 });
 Test("anonymous change items are never bound to a named character", () =>
 {

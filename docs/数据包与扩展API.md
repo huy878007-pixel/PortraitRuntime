@@ -101,3 +101,38 @@ StoryEngine.UnregisterEffect("myplugin.doubleCredit");
 ```
 
 包内使用 `{"op":"extension","key":"myplugin.doubleCredit","amount":10}`。扩展未加载时动作保持待执行，不能假定成功。扩展应在游戏主线程使用注册接口，并自行保证副作用与存档迁移的正确性。
+
+## 跨 Mod 显示接口（PortraitApi）
+
+依赖 Mod 无法用编译期引用接入核心：游戏原生扫描只放行游戏程序集和本 Mod manifest 里的程序集，引用核心 DLL 会被判为 unlisted reference 而拒绝加载。核心因此在 `PortraitRuntime.Unity.PortraitApi` 暴露一个只含 JSON 与 BCL 委托的晚绑定接口；依赖方在启用时按程序集扫描找到该类型，用反射调用（manifest 需声明 `reflection-external`）。
+
+| 成员 | 说明 |
+|---|---|
+| `Version` | 接口版本，当前 `1` |
+| `Capabilities` | `lifecycle/1`、`lookup/1`、`apply/1`、`status/1` |
+| `Subscribe(Action<string,string>)` / `Unsubscribe(...)` | 注册与注销生命周期回调 |
+| `Lookup(json)` | `{identity,factory,spriteKey,dialogueKey}` → `{ok,pack,path,character,via,reason}` |
+| `Apply(json)` | `{pack,path}` → 应用到当前绑定的立绘 renderer，返回是否成功 |
+| `Restore()` | 还原原版图并释放缓存绑定 |
+| `Status()` | 版本、能力、订阅数、运行状态与已加载包 |
+
+`Lookup` 与调试台的取图共用同一条 `SpriteLookup` 规则，因此预览、美化包与游戏内显示不会各说各话。
+
+生命周期节点：
+
+| 事件 | 时机 | 载荷 |
+|---|---|---|
+| `runtime.enabled` / `runtime.disabled` | 核心启用、禁用 | version、packs |
+| `content.changed` | 内容包重新扫描后 | packs、conflicts |
+| `client.before-arrival` | 下一位客人进场前 | day 或 morning |
+| `client.arrival` | 到场，renderer 已绑定 | identity、factory、spriteKey、renderer、vanilla |
+| `dialogue.display` | 每句台词显示后 | key、identity、spriteKey、factory |
+| `client.leaving` | 开始离场（`StartLeavingStore` 左 / `StartLeavingStoreRight` 右） | direction、context |
+| `client.left` | 离场动画结束（`StoreClientMono.OnLeft`） | renderer |
+| `client.outside` | 柜台外特殊来访（`MapUIManager.ActivateClientOutsideStore`） | identity、factory、spriteKey |
+| `scene.loaded` | 场景切换 | index、name、loaded |
+
+失败兜底与资源释放：回调抛出的异常被捕获并写 `api.subscriber.failed`，不会中断核心；核心在所有离场与禁用路径调用 `Restore()` 释放缓存绑定；依赖 Mod 关闭后核心不再回调，也不保留其图片与相机状态。启用顺序不影响结果——后启用的一方在 `runtime.enabled` 时补发一次当前状态，先启用的一方靠 `client.arrival` 等节点自然追上。
+
+**职责边界**：核心提供取图规则、renderer 绑定与还原、缓存、场景特殊资源替换、生命周期通知、调试台与日志；依赖 Mod 决定「显示哪张、什么时候显示」，并持有自己的偏移、缩放、高清偏好与 F10 窗口（`ui.json` 与美化 DLL 同目录保存）。美化包禁用时核心不做任何人物替换，F3 调试台和日志照常可用。
+

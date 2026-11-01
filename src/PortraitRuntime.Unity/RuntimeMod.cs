@@ -43,6 +43,19 @@ public sealed class RuntimeMod : IMod
     public static void Event(string level, string name, object data = null)
         => Current?.Trace?.Write(level, name, new { frame = Time.frameCount, day = StoreStation.Instance?.dayCounter, data });
     public static void Log(string text) { Debug.Log("[PortraitRuntime] " + text); Event("info", "runtime.message", new { message = text }); }
+    /// <summary>Identity/factory/sprite context handed to content Mods at every lifecycle node.</summary>
+    public static object Context(StoreClient client, SpriteRenderer renderer)
+    {
+        var runtime = Current;
+        return new
+        {
+            identity = client?.identifier,
+            factory = client != null && runtime != null && runtime.Origins.TryGetValue(client, out var tag) ? tag.Factory : null,
+            spriteKey = client?.spriteName,
+            renderer = renderer != null ? renderer.name : null,
+            vanilla = renderer != null && renderer.sprite != null ? renderer.sprite.name : null,
+        };
+    }
     public static void Guard(string scope, Action action)
     {
         try { action(); }
@@ -71,7 +84,7 @@ public sealed class RuntimeMod : IMod
         if (hash != SupportedHash) { Log("Unsupported game assembly " + hash + "; runtime disabled"); return; }
         if (HasLegacyConflict())
         { Log("Legacy portrait mod enabled; disable it before enabling PortraitRuntime. No hooks installed."); return; }
-        Settings.Load(Path.Combine(Root, "ui.json"));
+        Settings.Load(Path.Combine(Root, "runtime.json"), Path.Combine(Root, "ui.json"));
         Trace.Detailed = Settings.DetailedLogging;
         var keysPath = Path.Combine(Root, "catalogs", "dialogue_keys.json");
         dialogueKeys = File.Exists(keysPath) ? JsonConvert.DeserializeObject<HashSet<string>>(File.ReadAllText(keysPath)) : null;
@@ -103,11 +116,13 @@ public sealed class RuntimeMod : IMod
         RegisterActors();
         foreach (var directory in UObj.FindObjectsOfType<ModItemDirectory>()) RegisterItems(directory);
         Log("Enabled; F3 debug console, F10 display settings, F11 diagnostics");
+        PortraitApi.Raise(PortraitApi.Enabled, new { version = PortraitApi.Version, packs = Catalog.Packs.Select(x => x.Id).ToArray() });
     }
     public void OnDisable()
     {
         Debugger.CancelImmediately();
         Enabled = false;
+        PortraitApi.Raise(PortraitApi.Disabled, new { version = PortraitApi.Version });
         ContentSources.Changed -= ContentChanged;
         StoryEngine.Diagnostic -= StoryDiagnostic;
         ModHook.OnModItemDirectoryInit -= RegisterItems;
@@ -119,7 +134,6 @@ public sealed class RuntimeMod : IMod
         SpecialDisplay.Restore();
         RemoveOwnedFactories();
         Portrait.Restore();
-        Settings.Restore();
         harmony?.UnpatchAll(harmony.Id);
         Assets.RestoreItemOwners();
         if (pump != null) UObj.Destroy(pump.gameObject);
@@ -176,11 +190,18 @@ public sealed class RuntimeMod : IMod
         foreach (var directory in UObj.FindObjectsOfType<ModItemDirectory>()) RegisterItems(directory);
         Assets.RefreshItemOwners();
         SpecialDisplay.Apply(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
-        Portrait.Arrival();
+        var current = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
+        var renderer = StoreClientMono.Instance?.image;
+        if (current != null && Portrait.Bind(renderer)) PortraitApi.Raise(PortraitApi.Arrival, Context(current, renderer));
         Log("Content sources refreshed: " + Catalog.Packs.Count + " packs");
+        PortraitApi.Raise(PortraitApi.ContentChanged, new { packs = Catalog.Packs.Select(x => x.Id).ToArray(), conflicts = Catalog.Conflicts });
     });
     void NewGame(string id) => Loaded();
-    void SceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode) => Guard("special", () => SpecialDisplay.Apply(scene));
+    void SceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode) => Guard("special", () =>
+    {
+        SpecialDisplay.Apply(scene);
+        PortraitApi.Raise(PortraitApi.Scene, new { index = scene.buildIndex, name = scene.name, loaded = scene.isLoaded });
+    });
     void Loaded() => Guard("load", () =>
     {
         Debugger.CancelImmediately();
@@ -276,13 +297,11 @@ public sealed class RuntimePump : MonoBehaviour
             if (firstTick) { firstTick = false; RuntimeMod.Event("info", "pump.update.started"); }
             if (Time.unscaledTime >= nextHeartbeat) { nextHeartbeat = Time.unscaledTime + 30; RuntimeMod.Event("info", "pump.heartbeat", new { r.Settings.DebugHotkey, r.Debugger.Open, r.Debugger.Active }); }
             if (Input.GetKeyDown(r.Settings.DebugHotkeyCode)) ToggleDebug("Input.GetKeyDown");
-            if (Input.GetKeyDown(r.Settings.HotkeyCode)) r.Settings.Open = !r.Settings.Open;
             if (Input.GetKeyDown(KeyCode.F11)) r.Diagnostics();
-            if (Input.GetKeyDown(KeyCode.Escape)) { r.Settings.Open = false; r.Debugger.Open = false; }
+            if (Input.GetKeyDown(KeyCode.Escape)) r.Debugger.Open = false;
             r.Debugger.Tick();
         });
     }
-    void LateUpdate() => RuntimeMod.Guard("display", () => RuntimeMod.Current?.Settings.Apply());
     void OnGUI()
     {
         var r = RuntimeMod.Current; if (r == null || !r.Enabled) return;
@@ -294,7 +313,7 @@ public sealed class RuntimePump : MonoBehaviour
         {
             GUI.depth = -10000; GUI.color = GUI.backgroundColor = GUI.contentColor = Color.white;
             if (PlayerStore.Instance != null && GUI.Button(new Rect(Screen.width - 170, 12, 160, 32), r.Settings.DebugHotkey + " Debug")) ToggleDebug("screen button");
-            RuntimeMod.Guard("debug GUI", () => { if (r.Settings.Open) r.Settings.Draw(); if (r.Debugger.Open || r.Debugger.Active) r.Debugger.Draw(); });
+            RuntimeMod.Guard("debug GUI", () => { if (r.Debugger.Open || r.Debugger.Active) r.Debugger.Draw(); });
         }
         finally { GUI.color = color; GUI.backgroundColor = background; GUI.contentColor = content; GUI.depth = depth; }
     }

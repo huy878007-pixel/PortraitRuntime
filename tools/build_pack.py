@@ -86,7 +86,7 @@ def main():
         path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
     manifest(beauty, 'player.launchgiftportraits', '深空娘化 · 人物美化内容包', '2.0.1',
              '独立人物美化Mod：17位角色、669条剧情配图、11项特殊资源。依赖深空内容核心库，不包含旧版全局精灵替换逻辑。',
-             [bridge.name], dependencies=['player.portraitruntime'], capabilities=['files'])
+             [bridge.name], dependencies=['player.portraitruntime'], capabilities=['files', 'reflection-external'])
     for destination in [runtime, beauty]:
         shutil.copy2(ROOT / 'LICENSE', destination / 'LICENSE.txt')
     (beauty / '美术与素材署名.txt').write_text('人物美术：啊啊啊~哈稽道人，CC BY-NC 4.0。示范人物复用已有美术。图标示范为原游戏资源的本地测试变体，权利归游戏作者。', encoding='utf-8')
