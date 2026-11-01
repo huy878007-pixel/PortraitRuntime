@@ -28,6 +28,7 @@ public sealed class BeautyPump : MonoBehaviour
         if (!Ready()) return;
         var settings = BeautyContentMod.Settings;
         if (settings == null) return;
+        if (PortraitPolicy.LastPath != null && !CoreBridge.IsApplied()) PortraitPolicy.Reassert();
         settings.CaptureBubble(DialogUIManager.Instance);
         settings.Apply(PortraitPolicy.LastPath != null);
     }

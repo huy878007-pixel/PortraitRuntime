@@ -11,8 +11,20 @@ namespace LaunchGiftPortraits.Content;
 static class PortraitPolicy
 {
     static string identity, factory, spriteKey;
+    static string appliedPack, appliedPath;
     public static string LastPath { get; private set; }
     public static string LastStage { get; private set; } = "";
+
+    /// <summary>
+    /// Put the current portrait back. The game rewrites the renderer during fades, shadow phases and
+    /// client pooling; 1.2.5 compensated with a periodic repair scan, this is the same idea driven by
+    /// the core's "is it still mine" check instead of a blind timer.
+    /// </summary>
+    public static void Reassert()
+    {
+        if (appliedPack == null || appliedPath == null) return;
+        CoreBridge.Apply(JsonConvert.SerializeObject(new { pack = appliedPack, path = appliedPath }));
+    }
 
     public static void OnEvent(string name, string payload)
     {
@@ -70,11 +82,13 @@ static class PortraitPolicy
         var path = Text(answer, "path");
         if (pack == null || path == null) return;
         if (!CoreBridge.Apply(JsonConvert.SerializeObject(new { pack, path }))) return;
+        appliedPack = pack;
+        appliedPath = path;
         LastPath = path;
         LastStage = stage;
     }
 
-    static void Forget() { identity = null; factory = null; spriteKey = null; LastPath = null; LastStage = ""; }
+    static void Forget() { identity = null; factory = null; spriteKey = null; appliedPack = null; appliedPath = null; LastPath = null; LastStage = ""; }
 
     static JObject Parse(string json)
     {

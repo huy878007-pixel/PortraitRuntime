@@ -13,6 +13,9 @@ public sealed class PortraitDisplay
     Sprite vanilla, applied;
     public SpriteRenderer Renderer => bound;
     public Sprite Vanilla => vanilla;
+    /// <summary>True while our asset is still the sprite on the bound renderer. The game resets the
+    /// renderer during fades, shadows and pooling, so the content Mod re-asserts when this goes false.</summary>
+    public bool IsApplied => bound != null && applied != null && bound.sprite == applied;
 
     /// <summary>
     /// Track the renderer the next arrival will use. The native sprite is re-read whenever the game

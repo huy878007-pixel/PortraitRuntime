@@ -99,6 +99,12 @@ public static class PortraitApi
     public static void Restore() => RuntimeMod.Current?.Portrait.Restore();
 
     /// <summary>
+    /// Whether the content asset is still on the bound renderer. The game rewrites the renderer on
+    /// fades, shadow phases and pooling, so the content Mod checks this and re-applies when it drops.
+    /// </summary>
+    public static bool IsApplied() => RuntimeMod.Current?.Portrait.IsApplied == true;
+
+    /// <summary>
     /// Re-announce whoever is on screen. A content Mod that finished binding late (the loader may
     /// load it before this assembly exists) calls this once to catch up instead of waiting for the
     /// next visitor.

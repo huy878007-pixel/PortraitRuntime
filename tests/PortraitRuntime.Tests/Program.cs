@@ -189,14 +189,36 @@ Test("item icons stay with the pack-declared item runtime", () =>
 Test("native sprite names resolve to their character variant", () =>
 {
     var catalog = new Catalog(); catalog.Add(ReadPack("core"));
-    var lun = SpriteLookup.ResolveSpriteName(catalog, "officer_lun");
-    Check(lun.Ok && lun.Character == "lun" && System.IO.Path.GetFileName(lun.Path) == "lun.png", "officer_lun -> " + lun.Path);
+    // the game looks sprites up by asset name: lun, Mentor, wanted1 — not by identifier
+    var lun = SpriteLookup.ResolveSpriteName(catalog, "lun");
+    Check(lun.Ok && lun.Character == "lun" && System.IO.Path.GetFileName(lun.Path) == "lun.png", "lun -> " + lun.Path);
+    var mentor = SpriteLookup.ResolveSpriteName(catalog, "Mentor");
+    Check(mentor.Ok && mentor.Character == "Mentor", "Mentor -> " + mentor.Character);
+    var viaVariant = SpriteLookup.ResolveSpriteName(catalog, "officer_lun");
+    Check(viaVariant.Ok && viaVariant.Character == "lun", "officer_lun -> " + viaVariant.Path);
     var bailey = SpriteLookup.ResolveSpriteName(catalog, "wanted1");
     Check(bailey.Ok && bailey.Character == "bailey" && System.IO.Path.GetFileName(bailey.Path) == "wanted1.png", "wanted1 -> " + bailey.Path);
     var special = SpriteLookup.ResolveSpriteName(catalog, "wanted");
     Check(special.Ok && special.Via == "special", "wanted must stay a scene special");
-    Check(!SpriteLookup.ResolveSpriteName(catalog, "maleScav5").Ok, "a shared generic sprite must stay vanilla");
+    Check(!SpriteLookup.ResolveSpriteName(catalog, "maleScav11").Ok, "a shared generic sprite must stay vanilla");
     Check(!SpriteLookup.ResolveSpriteName(catalog, "sec").Ok, "the shared security sprite must stay vanilla");
+});
+Test("no two characters claim the same native sprite name", () =>
+{
+    var catalog = new Catalog(); catalog.Add(ReadPack("core"));
+    var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    foreach (var pack in catalog.Packs)
+        foreach (var character in pack.Characters)
+        {
+            names.Add(System.IO.Path.GetFileNameWithoutExtension(character.Value.Base));
+            foreach (var variant in character.Value.Variants)
+            {
+                names.Add(variant.Key);
+                names.Add(System.IO.Path.GetFileNameWithoutExtension(variant.Value));
+            }
+        }
+    foreach (var name in names.Where(x => x != null))
+        Check(SpriteLookup.ResolveVariant(catalog, name).Reason != "ambiguous", name + " is claimed by two characters");
 });
 Test("a sprite name claimed by two characters is refused, not guessed", () =>
 {

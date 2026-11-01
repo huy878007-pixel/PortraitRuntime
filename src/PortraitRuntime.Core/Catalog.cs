@@ -76,4 +76,39 @@ public sealed class Catalog
         return fallback;
     }
     public Entry<StoryDef> Story(Pack pack, string id) => id != null && Stories.TryGetValue(pack.Id + "/" + id, out var e) ? e : null;
+
+    readonly Dictionary<string, List<Entry<string>>> spriteNames = new(StringComparer.OrdinalIgnoreCase);
+    bool spriteIndexBuilt;
+
+    /// <summary>
+    /// Characters claiming a native sprite name. The game looks sprites up by their asset name
+    /// (<c>lun</c>, <c>Mentor</c>, <c>wanted1</c>), which is neither the client identifier nor always a
+    /// declared variant key, so both the variant keys and the image file stems are indexed.
+    /// </summary>
+    public List<Entry<string>> SpriteClaims(string spriteName)
+    {
+        if (!spriteIndexBuilt) { BuildSpriteIndex(); spriteIndexBuilt = true; }
+        return spriteName != null && spriteNames.TryGetValue(spriteName, out var claims) ? claims : null;
+    }
+    void BuildSpriteIndex()
+    {
+        foreach (var pack in Packs)
+            foreach (var pair in pack.Characters)
+            {
+                void Claim(string name, string path)
+                {
+                    if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(path)) return;
+                    if (!spriteNames.TryGetValue(name, out var claims)) spriteNames[name] = claims = new();
+                    if (claims.Any(x => x.Id == pair.Key && x.Value == path)) return;
+                    claims.Add(new Entry<string>(pack, pair.Key, path));
+                }
+                Claim(Stem(pair.Value.Base), pair.Value.Base);
+                foreach (var variant in pair.Value.Variants)
+                {
+                    Claim(variant.Key, variant.Value);
+                    Claim(Stem(variant.Value), variant.Value);
+                }
+            }
+    }
+    static string Stem(string path) => string.IsNullOrEmpty(path) ? null : Path.GetFileNameWithoutExtension(path);
 }
