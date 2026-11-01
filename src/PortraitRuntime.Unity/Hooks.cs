@@ -183,6 +183,7 @@ public static class Hooks
         foreach (var tag in item.state.dict.Keys.Where(x => x.StartsWith("PR_STOCK/", StringComparison.Ordinal)).ToArray())
             RuntimeMod.Current.Host.Set(tag.Substring("PR_STOCK/".Length), "sold");
     }
+    static readonly HashSet<string> probed = new(StringComparer.Ordinal);
     static void Special(ref Sprite __result)
     {
         if (!Active || __result == null) return;
@@ -191,8 +192,11 @@ public static class Hooks
         string answer;
         try { answer = resolver(__result.name); }
         catch (Exception e) { RuntimeMod.Log("Sprite resolver failed for " + __result.name + ": " + e.Message); return; }
-        if (string.IsNullOrEmpty(answer)) return;
-        var replaced = PortraitApi.Load(answer, __result);
+        Sprite replaced = null;
+        if (!string.IsNullOrEmpty(answer)) replaced = PortraitApi.Load(answer, __result);
+        // One line per distinct sprite name: proves whether the game asked for it and what we answered.
+        if (probed.Add(__result.name))
+            RuntimeMod.Event("debug", "sprite.probe", new { key = __result.name, answer, replaced = replaced != null });
         if (replaced != null) __result = replaced;
     }
 }

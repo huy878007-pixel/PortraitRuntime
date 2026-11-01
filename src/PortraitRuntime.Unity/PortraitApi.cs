@@ -107,9 +107,18 @@ public static class PortraitApi
     {
         var runtime = RuntimeMod.Current;
         if (runtime == null || !runtime.Enabled) return;
-        var client = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
-        var renderer = StoreUIManager.Instance?.clientGameObject?.image ?? StoreClientMono.Instance?.image;
-        if (client != null && runtime.Portrait.Bind(renderer)) Raise(Arrival, RuntimeMod.Context(client, renderer));
+        try
+        {
+            var client = PlayerStore.Instance?.currentClientInstance?.GetClientBlueprint();
+            if (client == null) return;
+            var renderer = StoreUIManager.Instance?.clientGameObject?.image ?? StoreClientMono.Instance?.image;
+            if (runtime.Portrait.Bind(renderer)) Raise(Arrival, RuntimeMod.Context(client, renderer));
+        }
+        catch (Exception e)
+        {
+            // A late bind can land while the store is still being built; retry on the next arrival.
+            RuntimeMod.Event("warning", "api.sync.failed", new { exception = e.ToString() });
+        }
     }
 
     /// <summary>

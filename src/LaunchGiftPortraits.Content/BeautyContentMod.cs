@@ -46,7 +46,7 @@ public sealed class BeautyContentMod : IMod
         settings ??= LoadSettings();
         SpritePresenter.Bind();
         SpecialTargets.Refresh();
-        CoreBridge.Sync();          // catch up with the visitor already on screen, if any
+        try { CoreBridge.Sync(); } catch (Exception e) { Warn("Catch-up failed: " + e.Message); }
         Warn("Bound to the core runtime; " + Diagnostic());
         return true;
     }
